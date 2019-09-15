@@ -74,6 +74,26 @@ function loadStageData() {
 }
 
 
+function showStageData() {
+    let str = 'stage number: ' + stageNumber + '\n'
+        + 'distance: ' + stageData.distance + '\n'
+        + 'total:' + stageData.total + '\n'
+        + 'avgSpeed:' + stageData.avgSpeed + '\n';
+
+    str += 'CheckPoints:\n';
+    for (let i = 0; i < stageData.checkPoints.length; i++) {
+        str += stageData.checkPoints[i] + '\n';
+    }
+
+    alert(str);
+}
+
+function reset() {
+    //localStorage.setItem(new Date().toLocaleTimeString().toUpperCase(), 'd:' + round2dp(distance / 1000) + ' / s:' + round2dp(avgSpeed));
+}
+
+
+
 var distance = 0.00;
 var actualSpeed = 0.00;
 var avgSpeed = 0.00;
@@ -198,25 +218,6 @@ function updateDisplayData() {
         : currentMode === 'runMode' && (avgSpeed - tolerance < stageData.avgSpeed
             ? '#3a9b0f'
             : '#ffa500');
-}
-
-
-//function clearHistory() {
-//    localStorage.clear();
-//}
-
-//function showHistory() {
-//    let values = '';
-//    let keys = Object.keys(localStorage);
-//    let i = keys.length;
-//    while (i--) {
-//        values += '\n\n' + keys[i] + '\n' + localStorage.getItem(keys[i]) + '\n';
-//    }
-//    alert(values);
-//}
-
-function reset() {
-    //localStorage.setItem(new Date().toLocaleTimeString().toUpperCase(), 'd:' + round2dp(distance / 1000) + ' / s:' + round2dp(avgSpeed));
 }
 
 
