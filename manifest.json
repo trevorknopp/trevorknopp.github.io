@@ -36,6 +36,6 @@
     "lang": "en-US",
     "start_url": "/avgSpeed2.html",
     "display": "standalone",
-    "background_color": "#ffa500",
-    "theme_color": "#ffa500"
+    "background_color": "white",
+    "theme_color": "white"
 }
