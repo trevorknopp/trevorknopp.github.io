@@ -16,12 +16,7 @@
             "src": "images/AvgSpeed2_96.png",
             "sizes": "96x96",
             "type": "image/png"
-        },
-        {
-            "src": "images/AvgSpeed2_144.png",
-            "sizes": "144x144",
-            "type": "image/png"
-        },
+        },       
         {
             "src": "images/AvgSpeed2_192.png",
             "sizes": "192x192",
