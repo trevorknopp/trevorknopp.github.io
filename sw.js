@@ -1,6 +1,9 @@
 var cacheName = 'avg2-cache';
 var filesToCache = [
-    'avgSpeed2.html'
+    '/avgSpeed2.html',
+    '/avgSpeed2.css',
+    '/avgSpeed2.js'
+
 ];
 
 /* Start the service worker and cache all of the app's content */
