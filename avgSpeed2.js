@@ -19,14 +19,14 @@ function processFile(contents) {
             return {
                 name: pairs[0],
                 value: pairs[1] ? pairs[1].split('\r')[0] : ''
-            }
+            };
         });
 
         stageData = {
             avgSpeed: data[1].value,
             distance: data[2].value,
             total: data[3].value,
-            checkPoints: getSteps(data)
+            checkPoints: getCheckPoints(data)
         };
 
         let tempStageNumber = Number.parseInt(data[0].value);
@@ -43,7 +43,7 @@ function processFile(contents) {
     }
 }
 
-function getSteps(data) {
+function getCheckPoints(data) {
     let i = 5;
     let steps = [];
     while (i < 25 && data[i] && data[i].value.length != 0) {
@@ -143,59 +143,72 @@ function gpsUpdate(position) {
     }
 }
 
+var distanceTourDiv = document.getElementById('distanceTourDiv');
+var actualSpeedTourDiv = document.getElementById('actualSpeedTourDiv');
+var remainingStageDistanceTourMainDiv = document.getElementById('remainingStageDistanceTourMainDiv');
+var remainingStageDistanceTourDiv = document.getElementById('remainingStageDistanceTourDiv');
+var actualSpeedRunDiv = document.getElementById('actualSpeedRunDiv');
+var avgSpeedRunDiv = document.getElementById('avgSpeedRunDiv');
+var distanceRunDiv = document.getElementById('distanceRunDiv');
+var remainingStageDistanceRunDiv = document.getElementById('remainingStageDistanceRunDiv');
+var remainingCheckPointDistanceDiv = document.getElementById("remainingCheckPointDistanceDiv");
+var remainingStageTimeDiv = document.getElementById("remainingStageTimeDiv");
+var remainingCheckPointTimeDiv = document.getElementById('remainingCheckPointTimeDiv');
+var countdownDiv = document.getElementById('countdownDiv');
+var remainingCheckPointSecondsDiv = document.getElementById('remainingCheckPointSecondsDiv');
 
 function updateDisplayData() {
 
-    document.getElementById('distanceTourDiv').innerHTML = round2dp(distance / 1000.00);
-    document.getElementById('actualSpeedTourDiv').innerHTML = Math.round(actualSpeed);
+    distanceTourDiv.innerHTML = round2dp(distance / 1000.00);
+    actualSpeedTourDiv.innerHTML = Math.round(actualSpeed);
 
-    document.getElementById('actualSpeedTourDiv').className = 'value ' + (actualSpeed > 101.00 ? 'blinking' : '');
+    actualSpeedTourDiv.className = 'value ' + (actualSpeed > 101.00 ? 'blinking' : '');
 
     if (stageNumber > 0) {
-        document.getElementById('remainingStageDistanceTourMainDiv').style.display = 'block';
-        document.getElementById('remainingStageDistanceTourDiv').innerHTML = round2dp(stageData.total - distance / 1000.00);
+        remainingStageDistanceTourMainDiv.style.display = 'block';
+        remainingStageDistanceTourDiv.innerHTML = round2dp(stageData.total - distance / 1000.00);
     }
     else {
-        document.getElementById('remainingStageDistanceTourMainDiv').style.display = 'none';
+        remainingStageDistanceTourMainDiv.style.display = 'none';
     }
 
 
-    if (currentMode == 'runMode' && !freezeDisplay) {
+    if (currentMode === 'runMode' && !freezeDisplay) {
         avgSpeed = distance * 3600.00 / (performance.now() - startTime);
 
-        document.getElementById('actualSpeedRunDiv').className = 'halfwit value ' + (actualSpeed > 126.00 ? 'blinking' : '');
+        actualSpeedRunDiv.className = 'halfwit value ' + (actualSpeed > 126.00 ? 'blinking' : '');
 
-        document.getElementById('actualSpeedRunDiv').innerHTML = Math.round(actualSpeed);
-        document.getElementById('avgSpeedRunDiv').innerHTML = round1dp(avgSpeed);
-        document.getElementById('distanceRunDiv').innerHTML = round2dp(distance / 1000.00);
+        actualSpeedRunDiv.innerHTML = Math.round(actualSpeed);
+        avgSpeedRunDiv.innerHTML = round1dp(avgSpeed);
+        distanceRunDiv.innerHTML = round2dp(distance / 1000.00);
 
-        document.getElementById('remainingStageDistanceRunDiv').innerHTML = round2dp(stageData.distance - distance / 1000.00);
+        remainingStageDistanceRunDiv.innerHTML = round2dp(stageData.distance - distance / 1000.00);
 
         let perfectCheckPointDistanceDifference = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
 
         let currentCheckPointDistance = distance / 1000.00 - startCheckPointDistance;
         let remainingCheckPointDistance = perfectCheckPointDistanceDifference - currentCheckPointDistance;
-        document.getElementById("remainingCheckPointDistanceDiv").innerHTML = round2dp(remainingCheckPointDistance);
+        remainingCheckPointDistanceDiv.innerHTML = round2dp(remainingCheckPointDistance);
 
         let perfectStageTime = (stageData.total / stageData.avgSpeed) * 3600000;
         let elapsedStageTime = lastTime - startTime;
         let remainingStageTime = perfectStageTime - elapsedStageTime;
-        document.getElementById("remainingStageTimeDiv").innerHTML = toTimeString(remainingStageTime);
+        remainingStageTimeDiv.innerHTML = toTimeString(remainingStageTime);
 
         let perfectCheckPointTime = (perfectCheckPointDistanceDifference / stageData.avgSpeed) * 3600000;
         let elapsedCheckPointTime = lastTime - startCheckPointTime;
         let remainingCheckPointTime = perfectCheckPointTime - elapsedCheckPointTime;
-        document.getElementById('remainingCheckPointTimeDiv').innerHTML = toTimeString(remainingCheckPointTime);
+        remainingCheckPointTimeDiv.innerHTML = toTimeString(remainingCheckPointTime);
 
         let countdown = Math.floor(-remainingCheckPointTime / 1000);
-        document.getElementById('countdownDiv').style.display = countdown > -11 && countdown < 21 ? 'block' : 'none';
-        document.getElementById('remainingCheckPointSecondsDiv').style.color = countdown < 0 ? '3a9b0f' : '#f00';
-        document.getElementById('remainingCheckPointSecondsDiv').innerHTML = countdown;
+        countdownDiv.style.display = countdown > -21 && countdown < 21 ? 'block' : 'none';
+        remainingCheckPointSecondsDiv.style.color = countdown < 0 ? '#3a9b0f' : '#f00';
+        remainingCheckPointSecondsDiv.innerHTML = countdown;
     }
 
-    document.body.style.backgroundColor = currentMode == 'runMode' && (avgSpeed + tolerance) > stageData.avgSpeed
+    document.body.style.backgroundColor = currentMode === 'runMode' && (avgSpeed + tolerance) > stageData.avgSpeed
         ? '#ff0000'
-        : (currentMode == 'runMode' && (avgSpeed - tolerance) < stageData.avgSpeed
+        : currentMode === 'runMode' && (avgSpeed - tolerance < stageData.avgSpeed
             ? '#3a9b0f'
             : '#ffa500');
 }
@@ -244,7 +257,7 @@ function enterTourMode() {
 
     currentMode = 'tourMode';
     updateStageAndCheckPoint();
-    document.body.style.backgroundColor = 'ffa500';
+    document.body.style.backgroundColor = '#ffa500';
 
     showCorrectPanel();
 }
@@ -262,11 +275,11 @@ function enterRunMode() {
 function start() {
     freezeDisplay = false;
     firstGPS = true;
-    distance = 0.00
+    distance = 0.00;
     actualSpeed = 0.00;
     avgSpeed = 0.00;
 
-    if (stageData.distance == undefined || stageData.distance < 0.1) {
+    if (stageData.distance === undefined || stageData.distance < 0.1) {
         enterTourMode();
     }
     else {
@@ -309,17 +322,17 @@ function updateStageAndCheckPoint() {
 
 
 function showCorrectPanel() {
-    if (currentMode == 'setupMode') {
+    if (currentMode === 'setupMode') {
         document.getElementById('setupDiv').style.display = 'block';
         document.getElementById('tourDiv').style.display = 'none';
         document.getElementById('runDiv').style.display = 'none';
     }
-    if (currentMode == 'tourMode') {
+    if (currentMode === 'tourMode') {
         document.getElementById('setupDiv').style.display = 'none';
         document.getElementById('tourDiv').style.display = 'block';
         document.getElementById('runDiv').style.display = 'none';
     }
-    if (currentMode == 'runMode') {
+    if (currentMode === 'runMode') {
         document.getElementById('setupDiv').style.display = 'none';
         document.getElementById('tourDiv').style.display = 'none';
         document.getElementById('runDiv').style.display = 'block';
