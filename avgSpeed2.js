@@ -143,19 +143,6 @@ function gpsUpdate(position) {
     }
 }
 
-var distanceTourDiv = document.getElementById('distanceTourDiv');
-var actualSpeedTourDiv = document.getElementById('actualSpeedTourDiv');
-var remainingStageDistanceTourMainDiv = document.getElementById('remainingStageDistanceTourMainDiv');
-var remainingStageDistanceTourDiv = document.getElementById('remainingStageDistanceTourDiv');
-var actualSpeedRunDiv = document.getElementById('actualSpeedRunDiv');
-var avgSpeedRunDiv = document.getElementById('avgSpeedRunDiv');
-var distanceRunDiv = document.getElementById('distanceRunDiv');
-var remainingStageDistanceRunDiv = document.getElementById('remainingStageDistanceRunDiv');
-var remainingCheckPointDistanceDiv = document.getElementById("remainingCheckPointDistanceDiv");
-var remainingStageTimeDiv = document.getElementById("remainingStageTimeDiv");
-var remainingCheckPointTimeDiv = document.getElementById('remainingCheckPointTimeDiv');
-var countdownDiv = document.getElementById('countdownDiv');
-var remainingCheckPointSecondsDiv = document.getElementById('remainingCheckPointSecondsDiv');
 
 function updateDisplayData() {
 
