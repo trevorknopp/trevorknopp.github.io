@@ -75,12 +75,12 @@ function loadStageData() {
 
 
 function showStageData() {
+    loadStageData();
     let str = 'stage number: ' + stageNumber + '\n'
         + 'distance: ' + stageData.distance + '\n'
-        + 'total:' + stageData.total + '\n'
-        + 'avgSpeed:' + stageData.avgSpeed + '\n';
+        + 'total: ' + stageData.total + '\n'
+        + 'avgSpeed: ' + stageData.avgSpeed + '\n';
 
-    str += 'CheckPoints:\n';
     for (let i = 0; i < stageData.checkPoints.length; i++) {
         str += stageData.checkPoints[i] + '\n';
     }
