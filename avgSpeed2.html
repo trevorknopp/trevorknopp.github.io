@@ -1,0 +1,214 @@
+﻿<html>
+<head>
+    <title>Avg Speed 2</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="ffa500" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Average Speed 2">
+    <meta name="msapplication-TileImage" content="images/AvgSpeed2_144.png">
+    <meta name="msapplication-TileColor" content="#ffa500">
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="images/AvgSpeed2_144.png">
+
+    <link rel="stylesheet" href="avgSpeed2.css" type="text/css" />
+
+    <script type="text/javascript" src="avgSpeed2.js"></script>
+</head>
+
+<body>
+
+    <div id="setupDiv">
+        <h2>SETUP</h2>
+
+        <div class="container">
+            <div>
+                <div class="prompt">
+                    Stage File
+                </div>
+                <input type="file" id="file-input">
+                <br />
+                &nbsp;- OR - &nbsp;
+                <br />
+                <div class="prompt">
+                    Stage Number
+                </div>
+                <input type="number" id="stage-number" value="1" min="1" max="20" required="required" />
+            </div>
+
+            <div style="padding-top: 5vh;">
+                <div class="prompt">
+                    Tolerance
+                </div>
+                <input type="number" id="tolerance" value="2" min="0" max="10" />
+            </div>
+
+
+            <!--<div style="padding-top: 5vh;">
+                <button style="font-size:2vw;" onclick="showHistory()">SHOW HISTORY</button>
+                <button style="font-size:2vw;" onclick="clearHistory()">CLEAR HISTORY</button>
+            </div>-->
+        </div>
+
+        <div class="botty">
+            <button onclick="leaveSetupMode()">NEXT</button>
+        </div>
+    </div>
+
+
+    <div id="tourDiv">
+        <h2>TOUR STG:<span id="stageNumberTourDiv">?</span></h2>
+
+        <div class="container">
+            <div class="prompt">
+                Current Time
+            </div>
+            <div id="clock" class="value"></div>
+
+            <div class="prompt">
+                Distance Travelled
+            </div>
+            <div id="distanceTourDiv" class="value">
+                0.00
+            </div>
+
+            <div id="remainingStageDistanceTourMainDiv">
+                <div class="prompt">
+                    Distance Remaining
+                </div>
+                <div id="remainingStageDistanceTourDiv" class="value">
+                    --.--
+                </div>
+            </div>
+
+
+            <div class="prompt">
+                Actual Speed
+            </div>
+            <div id="actualSpeedTourDiv" class="value">
+                0.00
+            </div>
+        </div>
+
+        <div class="botty">
+            <button onclick="enterSetupMode()">SETUP</button>
+            <button id="tourNextBtn" onclick="start()">NEXT</button>
+        </div>
+
+    </div>
+
+    <div id="runDiv">
+        <h2>RUN STG:<span id="stageNumberRunDiv">0</span> CKPT:<span id="checkPointNumberRunDiv">0</span></h2>
+
+        <div class="container">
+            <div class="prompt">
+                Average speed
+            </div>
+            <div id="avgSpeedRunDiv" class="value">
+                0.00
+            </div>
+
+            <div id="countdownDiv">
+                <div class="prompt">
+                    Count Down
+                </div>
+                <div id="remainingCheckPointSecondsDiv" class="value" style="background-color:#fff;">
+                    --
+                </div>
+            </div>
+
+            <div>
+                <div class="halfWit prompt">
+                    Next Time
+                </div>
+                <div class="halfWit prompt">
+                    End Time
+                </div>
+            </div>
+            <div>
+                <div id="remainingCheckPointTimeDiv" class="halfwit value smaller">
+                    --:--:--
+                </div>
+                <div id="remainingStageTimeDiv" class="halfwit value smaller">
+                    --:--:--
+                </div>
+            </div>
+
+            <div>
+                <div class="halfWit prompt ">
+                    Next Distance
+                </div>
+                <div class="halfWit prompt">
+                    End Distance
+                </div>
+            </div>
+            <div>
+                <div id="remainingCheckPointDistanceDiv" class="halfwit value smaller">
+                    --.--
+                </div>
+                <div id="remainingStageDistanceRunDiv" class="halfwit value smaller">
+                    --.--
+                </div>
+            </div>
+
+            <div>
+                <div class="halfwit prompt">
+                    Dist. Travelled
+                </div>
+                <div class="halfwit prompt">
+                    Actual speed
+                </div>
+            </div>
+            <div>
+                <div id="distanceRunDiv" class="halfwit value">
+                    0.00
+                </div>
+
+                <div id="actualSpeedRunDiv" class="halfwit value">
+                    0.00
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <div id="bottyDiv" class="botty">
+            <button onclick="enterSetupMode()">SETUP</button>
+            <button onclick="nextCheckPoint()">NEXT</button>
+        </div>
+    </div>
+
+
+
+    <script type="text/javascript">
+
+        navigator.serviceWorker.register('sw.js');
+
+        var gpsOptions = {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 1000,
+            maxWait: 1000,
+            desiredAccuracy: 5,
+            distanceFilter: 5
+        };
+        var wpId = navigator.geolocation.watchPosition(gpsUpdate, gpsError, gpsOptions);
+
+        document.getElementById('file-input').addEventListener('change', readSingleFile, false);
+
+
+        setInterval(updateClock, 1000);
+
+        var currentMode = '';
+        enterTourMode();
+    </script>
+
+</body>
+
+</html>
