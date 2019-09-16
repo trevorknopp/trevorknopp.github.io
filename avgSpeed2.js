@@ -214,13 +214,12 @@ function updateDisplayData() {
         countdownDiv.style.display = countdown > -21 && countdown < 21 ? 'block' : 'none';
         remainingCheckPointSecondsDiv.style.color = countdown < 0 ? '#3a9b0f' : '#f00';
         remainingCheckPointSecondsDiv.innerHTML = countdown;
-    }
 
-    document.body.style.backgroundColor = currentMode === 'runMode' && (avgSpeed + tolerance) > stageData.avgSpeed
-        ? '#ff0000'
-        : currentMode === 'runMode' && (avgSpeed - tolerance < stageData.avgSpeed
-            ? '#3a9b0f'
-            : '#ffa500');
+        document.body.style.backgroundColor = avgSpeed + tolerance > stageData.avgSpeed
+            ? '#ff0000'
+            : (avgSpeed - tolerance < stageData.avgSpeed ? '#3a9b0f' : '#ffa500');
+    }  
+    
 }
 
 
@@ -278,6 +277,19 @@ function start() {
     }
 }
 
+var unfrozenBackgroundColor = null;
+
+function toggleFreezeDisplay() {
+    freezeDisplay = !freezeDisplay;
+    if (freezeDisplay) {
+        unfrozenBackgroundColor = document.body.style.backgroundColor;
+        document.body.style.backgroundColor = '#000';
+    }
+    else {
+        document.body.style.backgroundColor = unfrozenBackgroundColor;
+    }
+}
+
 function nextCheckPoint() {
     checkPointNumber++;
     startCheckPointTime = performance.now();
@@ -287,12 +299,10 @@ function nextCheckPoint() {
 
         // freeze screen for 10 seconds (hide the button bar too)
         freezeDisplay = true;
-        document.getElementById('bottyDiv').style.display = 'none';
         document.body.style.backgroundColor = '#000';
 
         setTimeout(() => {
             freezeDisplay = false;
-            document.getElementById('bottyDiv').style.display = 'block';
             updateDisplayData();
             updateStageAndCheckPoint();
         }, 10000);
