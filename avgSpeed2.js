@@ -88,11 +88,6 @@ function showStageData() {
     alert(str);
 }
 
-function reset() {
-    //localStorage.setItem(new Date().toLocaleTimeString().toUpperCase(), 'd:' + round2dp(distance / 1000) + ' / s:' + round2dp(avgSpeed));
-}
-
-
 
 var distance = 0.00;
 var actualSpeed = 0.00;
@@ -150,7 +145,7 @@ function gpsUpdate(position) {
         let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
         actualSpeed = incDist * 3600.00 / incTime;
 
-        if (incDist > 0.5) {
+        if (incDist > 2.0) {
             distance += incDist;
 
             lastLat = position.coords.latitude;

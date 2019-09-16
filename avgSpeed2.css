@@ -19,7 +19,7 @@ h2 {
 input {
     font-size: 15vw;
     background-color: #ffcccc;
-    width: 20vw;
+    width: 25vw;
     margin: 5px;
     padding: 5px;
 }
@@ -60,7 +60,7 @@ button {
 }
 
 .container {
-    height: 80vh;
+    height: 70vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
