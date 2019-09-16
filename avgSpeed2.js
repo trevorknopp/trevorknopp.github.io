@@ -157,7 +157,9 @@ function gpsUpdate(position) {
             lastLon = position.coords.longitude;
         }
 
-        updateDisplayData();
+        if (!freezeDisplay) {
+            updateDisplayData();
+        }
 
         lastTime = performance.now();
     }
@@ -166,21 +168,22 @@ function gpsUpdate(position) {
 
 function updateDisplayData() {
 
-    distanceTourDiv.innerHTML = round2dp(distance / 1000.00);
-    actualSpeedTourDiv.innerHTML = Math.round(actualSpeed);
+    if (currentMode === 'tourMode') {
+        distanceTourDiv.innerHTML = round2dp(distance / 1000.00);
+        actualSpeedTourDiv.innerHTML = Math.round(actualSpeed);
 
-    actualSpeedTourDiv.className = 'value ' + (actualSpeed > 101.00 ? 'blinking' : '');
+        actualSpeedTourDiv.className = 'value ' + (actualSpeed > 101.00 ? 'blinking' : '');
 
-    if (stageNumber > 0) {
-        remainingStageDistanceTourMainDiv.style.display = 'block';
-        remainingStageDistanceTourDiv.innerHTML = round2dp(stageData.total - distance / 1000.00);
+        if (stageNumber > 0) {
+            remainingStageDistanceTourMainDiv.style.display = 'block';
+            remainingStageDistanceTourDiv.innerHTML = round2dp(stageData.total - distance / 1000.00);
+        }
+        else {
+            remainingStageDistanceTourMainDiv.style.display = 'none';
+        }
     }
-    else {
-        remainingStageDistanceTourMainDiv.style.display = 'none';
-    }
 
-
-    if (currentMode === 'runMode' && !freezeDisplay) {
+    if (currentMode === 'runMode') {
         avgSpeed = distance * 3600.00 / (performance.now() - startTime);
 
         actualSpeedRunDiv.className = 'halfwit value ' + (actualSpeed > 126.00 ? 'blinking' : '');
