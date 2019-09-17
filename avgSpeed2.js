@@ -1,4 +1,6 @@
-﻿function readSingleFile(e) {
+﻿// data loading and selecting
+
+function readSingleFile(e) {
     var file = e.target.files[0];
     if (!file) {
         return;
@@ -88,6 +90,8 @@ function showStageData() {
     alert(str);
 }
 
+
+// main engine starts here...
 
 var distance = 0.00;
 var actualSpeed = 0.00;
@@ -205,19 +209,81 @@ function updateDisplayData() {
         let remainingCheckPointTime = perfectCheckPointTime - elapsedCheckPointTime;
         remainingCheckPointTimeDiv.innerHTML = toTimeString(remainingCheckPointTime);
 
-        let countdown = Math.floor(-remainingCheckPointTime / 1000);
-        countdownDiv.style.display = countdown > -21 && countdown < 21 ? 'block' : 'none';
-        remainingCheckPointSecondsDiv.style.color = countdown < 0 ? '#3a9b0f' : '#f00';
-        remainingCheckPointSecondsDiv.innerHTML = countdown;
+        if ( remainingCheckPointTime < 20000 && !countdownTriggered) {
+            triggerCountdown();
+        }
+
+        if (Math.abs(remainingCheckPointTime) < 999.00) {
+            advanceCheckPoint();
+        }
 
         document.body.style.backgroundColor = avgSpeed + tolerance > stageData.avgSpeed
             ? '#ff0000'
             : (avgSpeed - tolerance < stageData.avgSpeed ? '#3a9b0f' : '#ffa500');
-    }  
-    
+    }
+
+}
+
+var countdownTriggered = false;
+
+function triggerCountdown() {
+    coundownTriggered = true;
+    countdownDiv.style.display = 'block';
+    var countdown = -20;
+
+    let si = setInterval(() => {
+        remainingCheckPointSecondsDiv.style.color = countdown < 0 ? '#3a9b0f' : '#f00';
+        remainingCheckPointSecondsDiv.innerHTML = countdown;
+        countdown++;
+        if (countdown > 20) {
+            countdownTriggered = false;
+            countdownDiv.style.display = 'none';
+            clearInterval(si);
+        }
+
+    }, 1000);
 }
 
 
+function advanceCheckPoint() {
+    checkPointNumber++;
+
+    if (checkPointNumber > stageData.checkPoints.length) {
+        enterTourMode();
+        return;
+    }
+
+    startCheckPointTime = performance.now();
+    startCheckPointDistance = distance / 1000.00;
+
+    updateDisplayData(); // don't wait for GPS to fire.
+}
+
+
+
+var unfrozenBackgroundColor = null;
+
+function toggleFreezeDisplay() {
+    freezeDisplay = !freezeDisplay;
+    if (freezeDisplay) {
+        unfrozenBackgroundColor = document.body.style.backgroundColor;
+        document.body.style.backgroundColor = '#000';
+    }
+    else {
+        document.body.style.backgroundColor = unfrozenBackgroundColor;
+    }
+}
+
+
+
+function updateStageAndCheckPoint() {
+    document.getElementById('stageNumberTourDiv').innerHTML = stageNumber;
+    document.getElementById('stageNumberRunDiv').innerHTML = stageNumber;
+    document.getElementById('checkPointNumberRunDiv').innerHTML = checkPointNumber;
+}
+
+
+// setting and displaying the right mode related data.
 
 
 function leaveSetupMode() {
@@ -272,51 +338,6 @@ function start() {
     }
 }
 
-var unfrozenBackgroundColor = null;
-
-function toggleFreezeDisplay() {
-    freezeDisplay = !freezeDisplay;
-    if (freezeDisplay) {
-        unfrozenBackgroundColor = document.body.style.backgroundColor;
-        document.body.style.backgroundColor = '#000';
-    }
-    else {
-        document.body.style.backgroundColor = unfrozenBackgroundColor;
-    }
-}
-
-function nextCheckPoint() {
-    checkPointNumber++;
-    startCheckPointTime = performance.now();
-    startCheckPointDistance = distance / 1000.00;
-
-    if (checkPointNumber < stageData.checkPoints.length) {
-
-        // freeze screen for 10 seconds (hide the button bar too)
-        freezeDisplay = true;
-        document.body.style.backgroundColor = '#000';
-
-        setTimeout(() => {
-            freezeDisplay = false;
-            updateDisplayData();
-            updateStageAndCheckPoint();
-        }, 10000);
-    }
-    else {
-        if (checkPointNumber > stageData.checkPoints.length) {
-            enterTourMode();
-        }
-    }
-}
-
-
-function updateStageAndCheckPoint() {
-    document.getElementById('stageNumberTourDiv').innerHTML = stageNumber;
-    document.getElementById('stageNumberRunDiv').innerHTML = stageNumber;
-    document.getElementById('checkPointNumberRunDiv').innerHTML = checkPointNumber;
-}
-
-
 function showCorrectPanel() {
     if (currentMode === 'setupMode') {
         document.getElementById('setupDiv').style.display = 'block';
@@ -335,6 +356,8 @@ function showCorrectPanel() {
     }
 }
 
+
+// utility functions
 
 function toTimeString(ms) {
     let negative = ms < 0;
