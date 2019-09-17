@@ -227,7 +227,7 @@ function updateDisplayData() {
 var countdownTriggered = false;
 
 function triggerCountdown() {
-    coundownTriggered = true;
+    countdownTriggered = true;
     countdownDiv.style.display = 'block';
     var countdown = -20;
 
