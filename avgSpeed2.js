@@ -209,7 +209,7 @@ function updateDisplayData() {
         let remainingCheckPointTime = perfectCheckPointTime - elapsedCheckPointTime;
         remainingCheckPointTimeDiv.innerHTML = toTimeString(remainingCheckPointTime);
 
-        if ( remainingCheckPointTime < 20000 && !countdownTriggered) {
+        if ( remainingCheckPointTime < 21000 && !countdownTriggered) {
             triggerCountdown();
         }
 
