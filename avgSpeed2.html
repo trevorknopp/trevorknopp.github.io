@@ -49,7 +49,7 @@
 
 
             <div style="padding-top: 2vh;">
-                <button style="font-size:3vw;" onclick="showStageData()">SHOW STAGE DATA (v2.0.0)</button>
+                <button style="font-size:3vw;" onclick="showStageData()">SHOW STAGE DATA (v1.2.1)</button>
             </div>
 
         </div>
@@ -198,10 +198,8 @@
             distanceFilter: 5
         };
 
-        setInterval(() => {
-            navigator.geolocation.getCurrentPosition(gpsUpdate, gpsError, gpsOptions);
-        }, 1000)
-        
+        var wpId = navigator.geolocation.watchPosition(gpsUpdate, gpsError, gpsOptions);
+
         document.getElementById('file-input').addEventListener('change', readSingleFile, false);
 
         var distanceTourDiv = document.getElementById('distanceTourDiv');

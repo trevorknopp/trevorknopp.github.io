@@ -114,7 +114,7 @@ var freezeDisplay = false;
 
 
 function gpsError(err) {
-    //alert('GPS error. Are you sure location is turned on? ');
+    alert('GPS error. Are you sure location is turned on? ');
 }
 
 
@@ -144,7 +144,7 @@ function gpsUpdate(position) {
     }
 
     let incTime = performance.now() - lastTime;
-//    if (incTime > 1000.00) {
+    if (incTime > 1000.00) {
 
         let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
         actualSpeed = incDist * 3600.00 / incTime;
@@ -161,7 +161,7 @@ function gpsUpdate(position) {
         }
 
         lastTime = performance.now();
-  //  }
+    }
 }
 
 
