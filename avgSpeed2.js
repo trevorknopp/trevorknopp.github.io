@@ -199,7 +199,7 @@ function updateDisplayData() {
         let remainingCheckPointDistance = perfectCheckPointDistanceDifference - currentCheckPointDistance;
         remainingCheckPointDistanceDiv.innerHTML = round2dp(remainingCheckPointDistance);
 
-        let perfectStageTime = (stageData.total / stageData.avgSpeed) * 3600000;
+        let perfectStageTime = (stageData.distance / stageData.avgSpeed) * 3600000;
         let elapsedStageTime = lastTime - startTime;
         let remainingStageTime = perfectStageTime - elapsedStageTime;
         remainingStageTimeDiv.innerHTML = toTimeString(remainingStageTime);
@@ -274,6 +274,17 @@ function toggleFreezeDisplay() {
     }
 }
 
+
+
+function freezeDisplayFor15() {
+    freezeDisplay = true;
+    unfrozenBackgroundColor = document.body.style.backgroundColor;
+    document.body.style.backgroundColor = '#000';
+    setTimeout(() => {
+        document.body.style.backgroundColor = unfrozenBackgroundColor;
+        freezeDisplay = false;
+    }, 15000);
+}
 
 
 function updateStageAndCheckPoint() {

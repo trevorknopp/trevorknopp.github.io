@@ -17,7 +17,7 @@ h2 {
 }
 
 input {
-    font-size: 15vw;
+    font-size: 14vw;
     background-color: #ffcccc;
     width: 25vw;
     margin: 5px;
@@ -45,7 +45,7 @@ button {
 }
 
 .value {
-    font-size: 18vw;
+    font-size: 12vw;
     margin-left: 0vw;
     margin-bottom: 2vw;
 }
@@ -60,7 +60,7 @@ button {
 }
 
 .container {
-    height: 70vh;
+    height: 75vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
