@@ -217,9 +217,17 @@ function updateDisplayData() {
             advanceCheckPoint();
         }
 
-        document.body.style.backgroundColor = avgSpeed + tolerance > stageData.avgSpeed
-            ? '#ff0000'
-            : (avgSpeed - tolerance < stageData.avgSpeed ? '#3a9b0f' : '#ffa500');
+        let backgroundColor = '#ffa500';
+
+        if (avgSpeed > stageData.avgSpeed + tolerance) {
+            backgroundColor = '#ff0000';
+        }
+        
+        if (avgSpeed < stageData.avgSpeed - tolerance) {
+            backgroundColor = '#3a9b0f';
+        }
+
+        document.body.style.backgroundColor = backgroundColor;        
     }
 
 }
