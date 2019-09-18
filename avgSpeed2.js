@@ -213,7 +213,7 @@ function updateDisplayData() {
             triggerCountdown();
         }
 
-        if (Math.abs(remainingCheckPointTime) < 999.00) {
+        if (remainingCheckPointTime < 1000 ) {
             advanceCheckPoint();
         }
 
@@ -257,6 +257,7 @@ function advanceCheckPoint() {
     startCheckPointDistance = distance / 1000.00;
 
     updateDisplayData(); // don't wait for GPS to fire.
+    updateStageAndCheckPoint();
 }
 
 
