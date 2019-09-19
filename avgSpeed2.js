@@ -209,7 +209,7 @@ function updateDisplayData() {
         let remainingCheckPointTime = perfectCheckPointTime - elapsedCheckPointTime;
         remainingCheckPointTimeDiv.innerHTML = toTimeString(remainingCheckPointTime);
 
-        if ( remainingCheckPointTime < 22100 && !countdownTriggered) {
+        if ( remainingCheckPointTime < 21000 && !countdownTriggered) {
             triggerCountdown();
         }
 
@@ -233,20 +233,23 @@ function updateDisplayData() {
 }
 
 var countdownTriggered = false;
+var countdownInterval = null;
 
 function triggerCountdown() {
+    var countdown = -20;
     countdownTriggered = true;
     countdownDiv.style.display = 'block';
-    var countdown = -20;
+    remainingCheckPointSecondsDiv.style.color = '#3a9b0f';
+    remainingCheckPointSecondsDiv.innerHTML = countdown;
 
-    let si = setInterval(() => {
+    countdownInterval = setInterval(() => {
         remainingCheckPointSecondsDiv.style.color = countdown < 0 ? '#3a9b0f' : '#f00';
         remainingCheckPointSecondsDiv.innerHTML = countdown;
         countdown++;
         if (countdown > 20) {
             countdownTriggered = false;
             countdownDiv.style.display = 'none';
-            clearInterval(si);
+            clearInterval(countdownInterval);
         }
 
     }, 1000);
@@ -277,6 +280,11 @@ function toggleFreezeDisplay() {
     if (freezeDisplay) {
         unfrozenBackgroundColor = document.body.style.backgroundColor;
         document.body.style.backgroundColor = '#000';
+
+        // if counting down, clear this too
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
     }
     else {
         document.body.style.backgroundColor = unfrozenBackgroundColor;
@@ -349,6 +357,8 @@ function start() {
     distance = 0.00;
     actualSpeed = 0.00;
     avgSpeed = 0.00;
+
+    countdownDiv.style.display = 'none';
 
     if (stageData.distance === undefined || stageData.distance < 0.1) {
         enterTourMode();
