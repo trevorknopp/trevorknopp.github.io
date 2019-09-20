@@ -57,7 +57,7 @@ function getCheckPoints(data) {
 }
 
 function loadStageData() {
-    debugger;
+  
     let tempStageNumber = document.getElementById('stage-number').value;
     let rawData = localStorage.getItem(tempStageNumber);
     if (rawData == null) {
@@ -162,7 +162,8 @@ function gpsUpdate(position) {
     }
 
     let incTime = performance.now() - lastTime;
-    if (incTime > 1000.00) {
+    if (incTime > 500.00) {
+        lastTime = performance.now();
 
         let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
         actualSpeed = incDist * 3600.00 / incTime;
@@ -177,8 +178,6 @@ function gpsUpdate(position) {
         if (!freezeDisplay) {
             updateDisplayData();
         }
-
-        lastTime = performance.now();
     }
 }
 
