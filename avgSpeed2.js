@@ -38,7 +38,9 @@ function processFile(contents) {
         localStorage.removeItem(data[0].value);
         localStorage.setItem(data[0].value, JSON.stringify(stageData));
 
-        document.getElementById('stage-number').value = data[0].value;
+
+        updateStageList();
+        //document.getElementById('stage-number').value = data[0].value;
     }
     catch (error) {
         alert('Failed to load the csv file');
@@ -55,13 +57,14 @@ function getCheckPoints(data) {
 }
 
 function loadStageData() {
+    debugger;
     let tempStageNumber = document.getElementById('stage-number').value;
     let rawData = localStorage.getItem(tempStageNumber);
     if (rawData == null) {
         return false;
     }
 
-    stageNumber = Number.parseFloat(tempStageNumber);
+   stageNumber = Number.parseFloat(tempStageNumber);
 
     stageData = JSON.parse(rawData);
 
@@ -73,6 +76,16 @@ function loadStageData() {
     }
 
     return true;
+}
+
+
+function updateStageList() {
+       
+    var s = document.getElementById('stage-number');
+
+    Object.keys(localStorage).forEach((element, key) => {
+        s[key] = new Option(element, element);
+    });
 }
 
 
@@ -130,7 +143,7 @@ function calcStepDistance(lat1, long1, lat2, long2) {
 
     var x = Δλ * Math.cos((φ1 + φ2) / 2);
     var y = φ2 - φ1;
-    return Math.sqrt(x * x + y * y) * 6370693.4856531;
+    return Math.sqrt(x * x + y * y) * 6368235.00; //6370693.4856531;
 }
 
 

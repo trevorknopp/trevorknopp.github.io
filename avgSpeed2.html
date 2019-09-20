@@ -28,16 +28,16 @@
         <div class="container">
             <div>
                 <div class="prompt">
-                    Stage File
+                    Load a Stage File
                 </div>
                 <input type="file" id="file-input">
                 <br />
                 &nbsp;- OR - &nbsp;
                 <br />
                 <div class="prompt">
-                    Stage Code
+                    Select a Stage
                 </div>
-                <input type="text" id="stage-number"  required="required" />
+                <select id="stage-number"></select>
             </div>
 
             <div style="padding-top: 5vh;">
@@ -49,7 +49,7 @@
 
 
             <div style="padding-top: 2vh;">
-                <button style="font-size:3vw;" onclick="showStageData()">SHOW STAGE DATA (v1.3.0)</button>
+                <button style="font-size:3vw;" onclick="showStageData()">SHOW STAGE DATA (v1.4.0)</button>
             </div>
 
         </div>
@@ -186,6 +186,8 @@
 
 
     <script type="text/javascript">
+
+        updateStageList();
 
         navigator.serviceWorker.register('/sw.js');
 
