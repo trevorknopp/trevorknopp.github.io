@@ -118,6 +118,11 @@ function gpsError(err) {
 }
 
 
+function getPerfectCheckPointTime() {
+    let perfectCheckPointDistanceDifference = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
+    return (perfectCheckPointDistanceDifference / stageData.avgSpeed) * 3600000;
+}
+
 function calcStepDistance(lat1, long1, lat2, long2) {
     var φ1 = Math.PI * lat1 / 180;
     var φ2 = Math.PI * lat2 / 180;
@@ -204,40 +209,39 @@ function updateDisplayData() {
         let remainingStageTime = perfectStageTime - elapsedStageTime;
         remainingStageTimeDiv.innerHTML = toTimeString(remainingStageTime);
 
-        let perfectCheckPointTime = (perfectCheckPointDistanceDifference / stageData.avgSpeed) * 3600000;
+        let perfectCheckPointTime = getPerfectCheckPointTime();
         let elapsedCheckPointTime = lastTime - startCheckPointTime;
         let remainingCheckPointTime = perfectCheckPointTime - elapsedCheckPointTime;
         remainingCheckPointTimeDiv.innerHTML = toTimeString(remainingCheckPointTime);
-
-        if ( remainingCheckPointTime < 21000 && !countdownTriggered) {
-            triggerCountdown();
-        }
-
-        if (remainingCheckPointTime < 1000 ) {
-            advanceCheckPoint();
-        }
 
         let backgroundColor = '#ffa500';
 
         if (avgSpeed > stageData.avgSpeed + tolerance) {
             backgroundColor = '#ff0000';
         }
-        
+
         if (avgSpeed < stageData.avgSpeed - tolerance) {
             backgroundColor = '#3a9b0f';
         }
 
-        document.body.style.backgroundColor = backgroundColor;        
+        document.body.style.backgroundColor = backgroundColor;
     }
 
 }
+
 
 var countdownTriggered = false;
 var countdownInterval = null;
 
 function triggerCountdown() {
-    var countdown = -20;
+
     countdownTriggered = true;
+    if (countdownInterval != null) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+
+    var countdown = -20;
     countdownDiv.style.display = 'block';
     remainingCheckPointSecondsDiv.style.color = '#3a9b0f';
     remainingCheckPointSecondsDiv.innerHTML = countdown;
@@ -256,20 +260,52 @@ function triggerCountdown() {
 }
 
 
-function advanceCheckPoint() {
-    checkPointNumber++;
+var perfectTimeTrigger = null;
 
-    if (checkPointNumber >= stageData.checkPoints.length) {
-        enterTourMode();
-        return;
-    }
+function doAdvanceCheckPoint() {
 
     startCheckPointTime = performance.now();
     startCheckPointDistance = distance / 1000.00;
 
     updateDisplayData(); // don't wait for GPS to fire.
     updateStageAndCheckPoint();
+
+    if (perfectTimeTrigger != null) {
+        clearTimeout(perfectTimeTrigger);
+        perfectTimeTrigger = null;
+    }
+
+    // kick off the countdown 20 seconds before end of checkpoint time.
+    let countdownKickoffTime = getPerfectCheckPointTime() - 20000;
+
+    console.log(' checkpointnumber: ' + checkPointNumber
+        + ' distance: ' + (stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1])
+        + ' kickoffTime: ' + countdownKickoffTime);
+
+    perfectTimeTrigger = setTimeout(() => {
+        triggerCountdown();
+    }, countdownKickoffTime);
+
 }
+
+
+function advanceCheckPoint() {
+
+    if (checkPointNumber < stageData.checkPoints.length) {
+        checkPointNumber++;
+        doAdvanceCheckPoint();
+
+        let perfectCheckPointTime = getPerfectCheckPointTime();
+        setTimeout(() => {
+            advanceCheckPoint();
+        }, perfectCheckPointTime);
+    }
+    else {
+        enterTourMode();
+    }
+}
+
+
 
 
 
@@ -282,9 +318,9 @@ function toggleFreezeDisplay() {
         document.body.style.backgroundColor = '#000';
 
         // if counting down, clear this too
-        if (countdownInterval) {
-            clearInterval(countdownInterval);
-        }
+        //       if (countdownInterval) {
+        //           clearInterval(countdownInterval);
+        //       }
     }
     else {
         document.body.style.backgroundColor = unfrozenBackgroundColor;
@@ -344,11 +380,10 @@ function enterTourMode() {
 
 function enterRunMode() {
     currentMode = 'runMode';
-
-    checkPointNumber = 1;
-    updateStageAndCheckPoint();
-
     showCorrectPanel();
+
+    checkPointNumber = 0;
+    advanceCheckPoint();
 }
 
 function start() {
