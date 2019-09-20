@@ -255,12 +255,17 @@ function triggerCountdown() {
 
     var countdown = -20;
     countdownDiv.style.display = 'block';
-    remainingCheckPointSecondsDiv.style.color = '#3a9b0f';
-    remainingCheckPointSecondsDiv.innerHTML = countdown;
+    remainingCheckPointSecondsDiv.style.color = countdown < 0 ? '#3a9b0f' : '#f00';
+    if (!freezeDisplay) {
+        remainingCheckPointSecondsDiv.innerHTML = countdown;
+    }
 
     countdownInterval = setInterval(() => {
         remainingCheckPointSecondsDiv.style.color = countdown < 0 ? '#3a9b0f' : '#f00';
-        remainingCheckPointSecondsDiv.innerHTML = countdown;
+        if (!freezeDisplay) {
+            remainingCheckPointSecondsDiv.innerHTML = countdown;
+        }
+
         countdown++;
         if (countdown > 20) {
             countdownTriggered = false;

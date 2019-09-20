@@ -17,6 +17,7 @@ h2 {
     padding-bottom: 1vw;
 }
 
+
 input, select {
     font-size: 14vw;
     font-weight:bold;
@@ -34,7 +35,7 @@ input, select {
     }
 
 option {
-    font-size: 4vw;
+    font-size: 6vw;
     font-weight: bold;
     text-align: center;
 }
