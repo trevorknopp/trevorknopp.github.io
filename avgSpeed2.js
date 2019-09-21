@@ -373,7 +373,7 @@ function leaveSetupMode() {
         return;
     }
 
-    tolerance = document.getElementById('tolerance').value;
+    tolerance = Number.parseFloat(document.getElementById('tolerance').value);
     updateStageAndCheckPoint();
 
     enterTourMode();
