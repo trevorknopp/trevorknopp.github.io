@@ -14,7 +14,6 @@ function readSingleFile(e) {
 }
 
 function processFile(contents) {
-
     try {
         let data = contents.split('\n').map((x) => {
             var pairs = x.split(',');
@@ -31,16 +30,11 @@ function processFile(contents) {
             checkPoints: getCheckPoints(data)
         };
 
-        let tempStageNumber = Number.parseInt(data[0].value);
-        if (isNaN(tempStageNumber) || tempStageNumber < 1 || tempStageNumber > 31) {
-            throw 'Rubbish';
-        }
         localStorage.removeItem(data[0].value);
         localStorage.setItem(data[0].value, JSON.stringify(stageData));
 
-
         updateStageList();
-        //document.getElementById('stage-number').value = data[0].value;
+        loadStageData();
     }
     catch (error) {
         alert('Failed to load the csv file');
@@ -57,14 +51,13 @@ function getCheckPoints(data) {
 }
 
 function loadStageData() {
-  
     let tempStageNumber = document.getElementById('stage-number').value;
     let rawData = localStorage.getItem(tempStageNumber);
     if (rawData == null) {
         return false;
     }
 
-   stageNumber = Number.parseFloat(tempStageNumber);
+    stageNumber = tempStageNumber;
 
     stageData = JSON.parse(rawData);
 
@@ -80,7 +73,6 @@ function loadStageData() {
 
 
 function updateStageList() {
-       
     var s = document.getElementById('stage-number');
 
     Object.keys(localStorage).forEach((element, key) => {
@@ -110,7 +102,7 @@ var distance = 0.00;
 var actualSpeed = 0.00;
 var avgSpeed = 0.00;
 var tolerance = 2.00;
-var stageNumber = 0;
+var stageNumber = '0';
 var stageData = {};
 var checkPointNumber = 1;
 
@@ -190,7 +182,7 @@ function updateDisplayData() {
 
         actualSpeedTourDiv.className = 'value ' + (actualSpeed > 101.00 ? 'blinking' : '');
 
-        if (stageNumber > 0) {
+        if (stageNumber != '0') {
             remainingStageDistanceTourMainDiv.style.display = 'block';
             remainingStageDistanceTourDiv.innerHTML = round2dp(stageData.total - distance / 1000.00);
         }
@@ -385,7 +377,7 @@ function enterSetupMode() {
 }
 
 function enterTourMode() {
-    document.getElementById('tourNextBtn').style.display = stageNumber > 0 ? 'inline-block' : 'none';
+    document.getElementById('tourNextBtn').style.display = stageNumber != '0' ? 'inline-block' : 'none';
 
     currentMode = 'tourMode';
     updateStageAndCheckPoint();
