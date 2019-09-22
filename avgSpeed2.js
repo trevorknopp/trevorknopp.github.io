@@ -291,10 +291,6 @@ function doAdvanceCheckPoint() {
     // kick off the countdown 20 seconds before end of checkpoint time.
     let countdownKickoffTime = getPerfectCheckPointTime() - 20000;
 
-    console.log(' checkpointnumber: ' + checkPointNumber
-        + ' distance: ' + (stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1])
-        + ' kickoffTime: ' + countdownKickoffTime);
-
     perfectTimeTrigger = setTimeout(() => {
         triggerCountdown();
     }, countdownKickoffTime);
