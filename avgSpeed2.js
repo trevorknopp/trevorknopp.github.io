@@ -133,9 +133,12 @@ function calcStepDistance(lat1, long1, lat2, long2) {
     var φ2 = Math.PI * lat2 / 180;
     var Δλ = Math.PI * (long2 - long1) / 180;
 
-    var x = Δλ * Math.cos((φ1 + φ2) / 2);
-    var y = φ2 - φ1;
-    return Math.sqrt(x * x + y * y) * 6368235.00; //6370693.4856531;
+    //var x = Δλ * Math.cos((φ1 + φ2) / 2);
+    //var y = φ2 - φ1;
+    //return Math.sqrt(x * x + y * y) * 6368235.00; //6370693.4856531;
+    
+    return Math.acos(Math.sin(φ1) * Math.sin(φ2) + Math.cos(φ1) * Math.cos(φ2) * Math.cos(Δλ)) * 6368235.00;
+
 }
 
 
