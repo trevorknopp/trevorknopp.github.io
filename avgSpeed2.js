@@ -138,8 +138,6 @@ function calcStepDistance(lat1, long1, lat2, long2) {
     return Math.sqrt(x * x + y * y) * 6368235.00; //6370693.4856531;
 }
 
-var log = [];
-
 
 function gpsUpdate(position) {
 
@@ -160,9 +158,6 @@ function gpsUpdate(position) {
         lastTime = performance.now();
 
         let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
-
-        log.push('\nincTime:' + incTime, ' incDist:' + incDist);
-
         actualSpeed = incDist * 3600.00 / incTime;
 
         if (incDist > 2.0) {
@@ -177,6 +172,7 @@ function gpsUpdate(position) {
         }
     }
 }
+
 
 function updateDisplayData() {
 
@@ -291,6 +287,10 @@ function doAdvanceCheckPoint() {
     // kick off the countdown 20 seconds before end of checkpoint time.
     let countdownKickoffTime = getPerfectCheckPointTime() - 20000;
 
+    console.log(' checkpointnumber: ' + checkPointNumber
+        + ' distance: ' + (stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1])
+        + ' kickoffTime: ' + countdownKickoffTime);
+
     perfectTimeTrigger = setTimeout(() => {
         triggerCountdown();
     }, countdownKickoffTime);
@@ -372,12 +372,6 @@ function leaveSetupMode() {
 }
 
 function enterSetupMode() {
-
-    if (log.length > 0) {
-        alert(log.join('\n'));
-        log = [];
-    }
-
     currentMode = 'setupMode';
     showCorrectPanel();
 }
