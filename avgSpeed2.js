@@ -223,6 +223,14 @@ function freezeDisplayFor15() {
     freezeTimer = setTimeout(() => {
         document.body.style.backgroundColor = unfrozenBackgroundColor;
         freezeDisplay = false;
+        if (isRunMode()) {
+            currentMode = 'runModeRunning';
+            showCorrectRunButton();
+        }
+        else {
+            currentMode = 'tourModeRunning';
+            showCorrectTourButton();
+        }
     }, 15000);
 }
 
@@ -245,9 +253,9 @@ function tourStart() {
 }
 
 function tourFreeze() {
-    freezeDisplayFor15();
     currentMode = 'tourModeFrozen';
     showCorrectTourButton();
+    freezeDisplayFor15();
 }
 
 function tourUnFreeze() {
@@ -286,9 +294,9 @@ function showCorrectTourButton() {
 
 
 function runFreeze() {
-    freezeDisplayFor15();
     currentMode = 'runModeFrozen';
     showCorrectRunButton();
+    freezeDisplayFor15();
 }
 
 function runUnFreeze() {
