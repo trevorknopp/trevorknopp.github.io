@@ -1,122 +1,4 @@
-﻿// data loading and selecting
-
-function readSingleFile(e) {
-    var file = e.target.files[0];
-    if (!file) {
-        return;
-    }
-    var reader = new FileReader();
-    reader.onload = function (e) {
-        var contents = e.target.result;
-        processFile(contents);
-    };
-    reader.readAsText(file);
-}
-
-function processFile(contents) {
-    try {
-        let data = contents.split('\n').map((x) => {
-            var pairs = x.split(',');
-            return {
-                name: pairs[0],
-                value: pairs[1] ? pairs[1].split('\r')[0] : ''
-            };
-        });
-
-        stageData = {
-            avgSpeed: data[1].value,
-            distance: data[2].value,
-            total: data[3].value,
-            checkPoints: getCheckPoints(data)
-        };
-
-        localStorage.removeItem(data[0].value);
-        localStorage.setItem(data[0].value, JSON.stringify(stageData));
-
-        updateStageList();
-        loadStageData();
-    }
-    catch (error) {
-        alert('Failed to load the csv file');
-    }
-}
-
-function getCheckPoints(data) {
-    let i = 5;
-    let steps = [];
-    while (i < 25 && data[i] && data[i].value.length != 0) {
-        steps.push(data[i++].value);
-    }
-    return steps;
-}
-
-function loadStageData() {
-    let tempStageNumber = document.getElementById('stage-number').value;
-    let rawData = localStorage.getItem(tempStageNumber);
-    if (rawData == null) {
-        return false;
-    }
-
-    stageNumber = tempStageNumber;
-
-    stageData = JSON.parse(rawData);
-
-    stageData.distance = Number.parseFloat(stageData.distance);
-    stageData.total = Number.parseFloat(stageData.total);
-    stageData.avgSpeed = Number.parseFloat(stageData.avgSpeed);
-    for (let i = 0; i < stageData.checkPoints.length; i++) {
-        stageData.checkPoints[i] = Number.parseFloat(stageData.checkPoints[i]);
-    }
-
-    return true;
-}
-
-
-function updateStageList() {
-    var s = document.getElementById('stage-number');
-
-    Object.keys(localStorage).forEach((element, key) => {
-        s[key] = new Option(element, element);
-    });
-}
-
-
-function showStageData() {
-    loadStageData();
-    let str = 'stage number: ' + stageNumber + '\n'
-        + 'distance: ' + stageData.distance + '\n'
-        + 'total: ' + stageData.total + '\n'
-        + 'avgSpeed: ' + stageData.avgSpeed + '\n';
-
-    for (let i = 0; i < stageData.checkPoints.length; i++) {
-        str += stageData.checkPoints[i] + '\n';
-    }
-
-    alert(str);
-}
-
-
-// main engine starts here...
-
-var distance = 0.00;
-var actualSpeed = 0.00;
-var avgSpeed = 0.00;
-var tolerance = 2.00;
-var stageNumber = '0';
-var stageData = {};
-var checkPointNumber = 1;
-
-var lastLat = null;
-var lastLon = null;
-var lastTime = null;
-var startTime = null;
-
-var startCheckPointTime = null;
-var startCheckPointDistance = null;
-
-var firstGPS = true;
-var freezeDisplay = false;
-
+﻿// main engine starts here...
 
 function gpsError(err) {
     alert('GPS error. Are you sure location is turned on? ');
@@ -133,17 +15,11 @@ function calcStepDistance(lat1, long1, lat2, long2) {
     var φ2 = Math.PI * lat2 / 180;
     var Δλ = Math.PI * (long2 - long1) / 180;
 
-    //var x = Δλ * Math.cos((φ1 + φ2) / 2);
-    //var y = φ2 - φ1;
-    //return Math.sqrt(x * x + y * y) * 6368235.00; //6370693.4856531;
-    
     return Math.acos(Math.sin(φ1) * Math.sin(φ2) + Math.cos(φ1) * Math.cos(φ2) * Math.cos(Δλ)) * 6368235.00;
-
 }
 
 
 function gpsUpdate(position) {
-
     if (firstGPS) {
         lastLat = position.coords.latitude;
         lastLon = position.coords.longitude;
@@ -178,8 +54,7 @@ function gpsUpdate(position) {
 
 
 function updateDisplayData() {
-
-    if (currentMode === 'tourMode') {
+    if (isTourMode()) {
         distanceTourDiv.innerHTML = round2dp(distance / 1000.00);
         actualSpeedTourDiv.innerHTML = Math.round(actualSpeed);
 
@@ -194,7 +69,7 @@ function updateDisplayData() {
         }
     }
 
-    if (currentMode === 'runMode') {
+    if (isRunMode()) {
         avgSpeed = distance * 3600.00 / (performance.now() - startTime);
 
         actualSpeedRunDiv.className = 'halfwit value ' + (actualSpeed > 126.00 ? 'blinking' : '');
@@ -272,7 +147,7 @@ function triggerCountdown() {
 }
 
 
-var perfectTimeTrigger = null;
+var perfectTimeCountdownTimer = null;
 
 function doAdvanceCheckPoint() {
 
@@ -282,9 +157,9 @@ function doAdvanceCheckPoint() {
     updateDisplayData(); // don't wait for GPS to fire.
     updateStageAndCheckPoint();
 
-    if (perfectTimeTrigger != null) {
-        clearTimeout(perfectTimeTrigger);
-        perfectTimeTrigger = null;
+    if (perfectTimeCountdownTimer != null) {
+        clearTimeout(perfectTimeCountdownTimer);
+        perfectTimeCountdownTrigger = null;
     }
 
     // kick off the countdown 20 seconds before end of checkpoint time.
@@ -294,12 +169,13 @@ function doAdvanceCheckPoint() {
         + ' distance: ' + (stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1])
         + ' kickoffTime: ' + countdownKickoffTime);
 
-    perfectTimeTrigger = setTimeout(() => {
+    perfectTimeCountdownTimer = setTimeout(() => {
         triggerCountdown();
     }, countdownKickoffTime);
 
 }
 
+var advanceCheckPointTimer = null;
 
 function advanceCheckPoint() {
 
@@ -307,18 +183,21 @@ function advanceCheckPoint() {
         checkPointNumber++;
         doAdvanceCheckPoint();
 
+        // last checkpoint
+        if (checkPointNumber == stageData.checkPoints.length - 1) {
+            clearTimeout(advanceCheckPointTimer);
+            currentMode = 'runModeFinishing';
+            showCorrectRunButton();
+            return;
+        }
+
         let perfectCheckPointTime = getPerfectCheckPointTime();
-        setTimeout(() => {
+        advanceCheckPointTimer = setTimeout(() => {
             advanceCheckPoint();
         }, perfectCheckPointTime);
-    }
-    else {
-        enterTourMode();
+
     }
 }
-
-
-
 
 
 var unfrozenBackgroundColor = null;
@@ -328,11 +207,6 @@ function toggleFreezeDisplay() {
     if (freezeDisplay) {
         unfrozenBackgroundColor = document.body.style.backgroundColor;
         document.body.style.backgroundColor = '#000';
-
-        // if counting down, clear this too
-        //       if (countdownInterval) {
-        //           clearInterval(countdownInterval);
-        //       }
     }
     else {
         document.body.style.backgroundColor = unfrozenBackgroundColor;
@@ -340,12 +214,13 @@ function toggleFreezeDisplay() {
 }
 
 
+var freezeTimer = null;
 
 function freezeDisplayFor15() {
     freezeDisplay = true;
     unfrozenBackgroundColor = document.body.style.backgroundColor;
     document.body.style.backgroundColor = '#000';
-    setTimeout(() => {
+    freezeTimer = setTimeout(() => {
         document.body.style.backgroundColor = unfrozenBackgroundColor;
         freezeDisplay = false;
     }, 15000);
@@ -362,6 +237,106 @@ function updateStageAndCheckPoint() {
 // setting and displaying the right mode related data.
 
 
+function tourStart() {
+    currentMode = 'tourModeRunning';
+    showCorrectTourButton();
+
+    tourRunning();
+}
+
+function tourFreeze() {
+    freezeDisplayFor15();
+    currentMode = 'tourModeFrozen';
+    showCorrectTourButton();
+}
+
+function tourUnFreeze() {
+    toggleFreezeDisplay();
+    currentMode = 'tourModeRunning';
+    showCorrectTourButton();
+}
+
+
+
+function showCorrectTourButton() {
+    if (currentMode == 'tourModeNoStage') {
+        tourStartBtn.style.display = 'none';
+        tourFreezeBtn.style.display = 'none';
+        tourUnFreezeBtn.style.display = 'none';
+    }
+
+    if (currentMode == 'tourModeWaiting') {
+        tourStartBtn.style.display = 'inline-block';
+        tourFreezeBtn.style.display = 'none';
+        tourUnFreezeBtn.style.display = 'none';
+    }
+
+    if (currentMode == 'tourModeRunning') {
+        tourFreezeBtn.style.display = 'inline-block';
+        tourUnFreezeBtn.style.display = 'none';
+        tourStartBtn.style.display = 'none';
+    }
+
+    if (currentMode == 'tourModeFrozen') {
+        tourUnFreezeBtn.style.display = 'inline-block';
+        tourStartBtn.style.display = 'none';
+        tourFreezeBtn.style.display = 'none';
+    }
+}
+
+
+function runFreeze() {
+    freezeDisplayFor15();
+    currentMode = 'runModeFrozen';
+    showCorrectRunButton();
+}
+
+function runUnFreeze() {
+    toggleFreezeDisplay();
+
+    if (checkPointNumber == stageData.checkPoints.length - 1) {
+        enterTourMode();
+    }
+    else {
+        currentMode = 'runModeRunning';
+        showCorrectRunButton();
+    }
+}
+
+function runFinish() {
+    clearTimeout(freezeTimer);
+    clearTimeout(advanceCheckPointTimer);
+    clearTimeout(perfectTimeCountdownTimer);
+    clearInterval(countdownInterval);
+
+
+    toggleFreezeDisplay();
+    currentMode = 'runModeFrozen';
+    showCorrectRunButton();
+}
+
+
+function showCorrectRunButton() {
+    if (currentMode == 'runModeFinishing') {
+        runFinishBtn.style.display = 'inline-block';
+        runFreezeBtn.style.display = 'none';
+        runUnFreezeBtn.style.display = 'none';
+    }
+
+    if (currentMode == 'runModeRunning') {
+        runFreezeBtn.style.display = 'inline-block';
+        runUnFreezeBtn.style.display = 'none';
+        runFinishBtn.style.display = 'none';
+    }
+
+    if (currentMode == 'runModeFrozen') {
+        runUnFreezeBtn.style.display = 'inline-block';
+        runFreezeBtn.style.display = 'none';
+        runFinishBtn.style.display = 'none';
+    }
+}
+
+
 function leaveSetupMode() {
     if (!loadStageData()) {
         alert("Error: Stage Data not loaded");
@@ -369,36 +344,37 @@ function leaveSetupMode() {
     }
 
     tolerance = Number.parseFloat(document.getElementById('tolerance').value);
-    updateStageAndCheckPoint();
 
     enterTourMode();
 }
 
 function enterSetupMode() {
     currentMode = 'setupMode';
+    showCorrectTourButton();
     showCorrectPanel();
 }
 
 function enterTourMode() {
-    document.getElementById('tourNextBtn').style.display = stageNumber != '0' ? 'inline-block' : 'none';
+    currentMode = stageNumber === '0' ? 'tourModeNoStage' : 'tourModeWaiting';
+    showCorrectTourButton();
 
-    currentMode = 'tourMode';
     updateStageAndCheckPoint();
     document.body.style.backgroundColor = '#ffa500';
 
     showCorrectPanel();
 }
 
-
 function enterRunMode() {
-    currentMode = 'runMode';
+    currentMode = 'runModeRunning';
+    showCorrectRunButton();
     showCorrectPanel();
 
     checkPointNumber = 0;
     advanceCheckPoint();
 }
 
-function start() {
+
+function tourRunning() {
     freezeDisplay = false;
     firstGPS = true;
     distance = 0.00;
@@ -407,10 +383,7 @@ function start() {
 
     countdownDiv.style.display = 'none';
 
-    if (stageData.distance === undefined || stageData.distance < 0.1) {
-        enterTourMode();
-    }
-    else {
+    if (stageData.distance > 0.1) {
         enterRunMode();
     }
 }
@@ -421,12 +394,12 @@ function showCorrectPanel() {
         document.getElementById('tourDiv').style.display = 'none';
         document.getElementById('runDiv').style.display = 'none';
     }
-    if (currentMode === 'tourMode') {
+    if (isTourMode()) {
         document.getElementById('setupDiv').style.display = 'none';
         document.getElementById('tourDiv').style.display = 'block';
         document.getElementById('runDiv').style.display = 'none';
     }
-    if (currentMode === 'runMode') {
+    if (isRunMode()) {
         document.getElementById('setupDiv').style.display = 'none';
         document.getElementById('tourDiv').style.display = 'none';
         document.getElementById('runDiv').style.display = 'block';
@@ -459,4 +432,12 @@ function round1dp(num) {
 
 function updateClock() {
     document.getElementById('clock').innerHTML = new Date().toLocaleTimeString();
+}
+
+function isTourMode() {
+    return currentMode.indexOf('tourMode') > -1;
+}
+
+function isRunMode() {
+    return currentMode.indexOf('runMode') > -1;
 }

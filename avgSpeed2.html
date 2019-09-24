@@ -49,7 +49,7 @@
 
 
             <div style="padding-top: 2vh;">
-                <button style="font-size:3vw;" onclick="showStageData()">SHOW STAGE DATA (v1.5.3)</button>
+                <button style="font-size:3vw;" onclick="showStageData()">SHOW STAGE DATA (v1.6.0)</button>
             </div>
 
         </div>
@@ -95,8 +95,10 @@
         </div>
 
         <div class="botty">
-            <button onclick="enterSetupMode()">SETUP</button>
-            <button id="tourNextBtn" onclick="start()">NEXT</button>
+            <button id="tourSetupBtn" onclick="enterSetupMode()">SETUP</button>
+            <button id="tourStartBtn" onclick="tourStart()">START</button>
+            <button id="tourFreezeBtn" onclick="tourFreeze()">FREEZE</button>
+            <button id="tourUnFreezeBtn" onclick="tourUnFreeze()">UNFREEZE</button>
         </div>
 
     </div>
@@ -178,51 +180,15 @@
         </div>
 
         <div id="bottyDiv" class="botty">
-            <button onclick="enterSetupMode()">SETUP</button>
-            <button onclick="freezeDisplayFor15()">NEXT</button>
+            <button id="runSetupBtn" onclick="enterSetupMode()">SETUP</button>
+            <button id="runFreezeBtn" onclick="runFreeze()">FREEZE</button>
+            <button id="runUnFreezeBtn" onclick="runUnFreeze()">UNFREEZE</button>
+            <button id="runFinishBtn" onclick="runFinish()">FINISH</button>
         </div>
     </div>
 
-
-
-    <script type="text/javascript">
-
-        updateStageList();
-
-        navigator.serviceWorker.register('/sw.js');
-
-        var gpsOptions = {
-            enableHighAccuracy: true,
-            maximumAge: 0,
-            timeout: 1000,
-            maxWait: 1000,
-            desiredAccuracy: 5,
-            distanceFilter: 5
-        };
-
-        var wpId = navigator.geolocation.watchPosition(gpsUpdate, gpsError, gpsOptions);
-
-        document.getElementById('file-input').addEventListener('change', readSingleFile, false);
-
-        var distanceTourDiv = document.getElementById('distanceTourDiv');
-        var actualSpeedTourDiv = document.getElementById('actualSpeedTourDiv');
-        var remainingStageDistanceTourMainDiv = document.getElementById('remainingStageDistanceTourMainDiv');
-        var remainingStageDistanceTourDiv = document.getElementById('remainingStageDistanceTourDiv');
-        var actualSpeedRunDiv = document.getElementById('actualSpeedRunDiv');
-        var avgSpeedRunDiv = document.getElementById('avgSpeedRunDiv');
-        var distanceRunDiv = document.getElementById('distanceRunDiv');
-        var remainingStageDistanceRunDiv = document.getElementById('remainingStageDistanceRunDiv');
-        var remainingCheckPointDistanceDiv = document.getElementById("remainingCheckPointDistanceDiv");
-        var remainingStageTimeDiv = document.getElementById("remainingStageTimeDiv");
-        var remainingCheckPointTimeDiv = document.getElementById('remainingCheckPointTimeDiv');
-        var countdownDiv = document.getElementById('countdownDiv');
-        var remainingCheckPointSecondsDiv = document.getElementById('remainingCheckPointSecondsDiv');
-
-        setInterval(updateClock, 1000);
-
-        var currentMode = '';
-        enterTourMode();
-    </script>
+    <script type="text/javascript" src="/avgSpeed2Data.js"></script>
+    <script type="text/javascript" src="/avgSpeed2Startup.js"></script>
 
 </body>
 
