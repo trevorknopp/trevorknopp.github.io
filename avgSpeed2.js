@@ -90,6 +90,7 @@ function updateDisplayData() {
         let remainingCheckPointDistance = perfectCheckPointDistance - currentCheckPointDistance;
         remainingCheckPointDistanceDiv.innerHTML = round2dp(remainingCheckPointDistance);
 
+
         let perfectStageTime = (stageData.distance / stageData.avgSpeed) * 3600000;
         let elapsedStageTime = lastTime - startTime;
         let remainingStageTime = perfectStageTime - elapsedStageTime;

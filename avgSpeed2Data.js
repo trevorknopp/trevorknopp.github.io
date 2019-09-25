@@ -1,7 +1,7 @@
 // data loading and selecting
 
 function readSingleFile(e) {
-    var file = e.target.files[0];
+    var file = e.target.files[0]; 
     if (!file) {
         return;
     }
