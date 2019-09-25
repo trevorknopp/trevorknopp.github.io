@@ -6,8 +6,10 @@ function gpsError(err) {
 
 
 function getPerfectCheckPointTime() {
-    let perfectCheckPointDistanceDifference = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
-    return (perfectCheckPointDistanceDifference / stageData.avgSpeed) * 3600000;
+//    let perfectCheckPointDistanceDifference = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
+//    return (perfectCheckPointDistanceDifference / stageData.avgSpeed) * 3600000;
+    let perfectCheckPointDistance = stageData.checkPoints[checkPointNumber];
+    return (perfectCheckPointDistance / stageData.avgSpeed) * 3600000;
 }
 
 function calcStepDistance(lat1, long1, lat2, long2) {
@@ -80,10 +82,12 @@ function updateDisplayData() {
 
         remainingStageDistanceRunDiv.innerHTML = round2dp(stageData.distance - distance / 1000.00);
 
-        let perfectCheckPointDistanceDifference = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
+        //When the checkpoint advances, the “next distance” should be the 
+        // new checkpoint distance from the start minus the Distance Travelled.
 
-        let currentCheckPointDistance = distance / 1000.00 - startCheckPointDistance;
-        let remainingCheckPointDistance = perfectCheckPointDistanceDifference - currentCheckPointDistance;
+        let perfectCheckPointDistance = stageData.checkPoints[checkPointNumber];
+        let currentCheckPointDistance = distance / 1000.00; // - startCheckPointDistance;
+        let remainingCheckPointDistance = perfectCheckPointDistance - currentCheckPointDistance;
         remainingCheckPointDistanceDiv.innerHTML = round2dp(remainingCheckPointDistance);
 
         let perfectStageTime = (stageData.distance / stageData.avgSpeed) * 3600000;
@@ -91,9 +95,11 @@ function updateDisplayData() {
         let remainingStageTime = perfectStageTime - elapsedStageTime;
         remainingStageTimeDiv.innerHTML = toTimeString(remainingStageTime);
 
-        let perfectCheckPointTime = getPerfectCheckPointTime();
-        let elapsedCheckPointTime = lastTime - startCheckPointTime;
-        let remainingCheckPointTime = perfectCheckPointTime - elapsedCheckPointTime;
+        //let perfectCheckPointTime = getPerfectCheckPointTime();
+        //let elapsedCheckPointTime = lastTime - startCheckPointTime;
+        //let remainingCheckPointTime = perfectCheckPointTime - elapsedCheckPointTime;
+
+        let remainingCheckPointTime = getPerfectCheckPointTime() - lastTime;
         remainingCheckPointTimeDiv.innerHTML = toTimeString(remainingCheckPointTime);
 
         let backgroundColor = '#ffa500';
@@ -154,7 +160,9 @@ function doAdvanceCheckPoint() {
     startCheckPointTime = performance.now();
     startCheckPointDistance = distance / 1000.00;
 
-    updateDisplayData(); // don't wait for GPS to fire.
+    // don't wait for GPS to fire.
+    lastTime = performance.now();
+    updateDisplayData(); 
     updateStageAndCheckPoint();
 
     if (perfectTimeCountdownTimer != null) {
