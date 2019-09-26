@@ -1,7 +1,7 @@
 var distance = 0.00;
 var actualSpeed = 0.00;
 var avgSpeed = 0.00;
-var tolerance = 2.00; 
+var tolerance = 2.00;
 var stageNumber = '0';
 var stageData = {};
 var checkPointNumber = 1;
@@ -11,8 +11,8 @@ var lastLon = null;
 var lastTime = null;
 var startTime = null;
 
-var startCheckPointTime = null;
-var startCheckPointDistance = null;
+//var startCheckPointTime = null;
+//var startCheckPointDistance = null;
 
 var firstGPS = true;
 var freezeDisplay = false;
@@ -29,6 +29,14 @@ var gpsOptions = {
 };
 
 var wpId = navigator.geolocation.watchPosition(gpsUpdate, gpsError, gpsOptions);
+// mock watchPosition
+//setInterval(() => {
+//    let position = {};
+//    position.coords = {};
+//    position.coords.latitude = -45.000;
+//    position.coords.longitude = 178.000;
+//    gpsUpdate(position);
+//}, 200);
 
 document.getElementById('file-input').addEventListener('change', readSingleFile, false);
 
