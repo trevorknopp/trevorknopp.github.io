@@ -5,10 +5,6 @@ function gpsError(err) {
 }
 
 
-function getPerfectCheckPointTime() {
-    let perfectCheckPointDistance = stageData.checkPoints[checkPointNumber];
-    return (perfectCheckPointDistance / stageData.avgSpeed) * 3600000;
-}
 
 function calcStepDistance(lat1, long1, lat2, long2) {
     var φ1 = Math.PI * lat1 / 180;
@@ -23,11 +19,6 @@ function gpsUpdate(position) {
     if (firstGPS) {
         lastLat = position.coords.latitude;
         lastLon = position.coords.longitude;
-        distance = 0.00;
-        avgSpeed = 0.00;
-        lastTime = performance.now();
-        startTime = performance.now();
-        //startCheckPointTime = performance.now();
         firstGPS = false;
         return;
     }
@@ -84,7 +75,7 @@ function updateDisplayData() {
         // new checkpoint distance from the start minus the Distance Travelled.
 
         let perfectCheckPointDistance = stageData.checkPoints[checkPointNumber];
-        let currentCheckPointDistance = distance / 1000.00; 
+        let currentCheckPointDistance = distance / 1000.00;
         let remainingCheckPointDistance = perfectCheckPointDistance - currentCheckPointDistance;
         remainingCheckPointDistanceDiv.innerHTML = round2dp(remainingCheckPointDistance);
 
@@ -94,9 +85,11 @@ function updateDisplayData() {
         let remainingStageTime = perfectStageTime - elapsedStageTime;
         remainingStageTimeDiv.innerHTML = toTimeString(remainingStageTime);
 
-        let elapsedCheckPointTime = performance.now() - startTime;
-        let remainingCheckPointTime = getPerfectCheckPointTime() - elapsedCheckPointTime;
+        let elapsedCheckPointTime = performance.now() - previousCheckPointTime;
+        let remainingCheckPointTime = nextCheckPointPeriod - elapsedCheckPointTime;
         remainingCheckPointTimeDiv.innerHTML = toTimeString(remainingCheckPointTime);
+
+
 
         let backgroundColor = '#ffa500';
 
@@ -114,12 +107,10 @@ function updateDisplayData() {
 }
 
 
-var countdownTriggered = false;
 var countdownInterval = null;
 
 function triggerCountdown() {
 
-    countdownTriggered = true;
     if (countdownInterval != null) {
         clearInterval(countdownInterval);
         countdownInterval = null;
@@ -140,7 +131,6 @@ function triggerCountdown() {
 
         countdown++;
         if (countdown > 20) {
-            countdownTriggered = false;
             countdownDiv.style.display = 'none';
             clearInterval(countdownInterval);
         }
@@ -150,39 +140,13 @@ function triggerCountdown() {
 
 
 var perfectTimeCountdownTimer = null;
+var nextCheckPointPeriod = 0;
+var previousCheckPointTime = 0;
+
 
 function doAdvanceCheckPoint() {
-
-    //startCheckPointTime = performance.now();
-    //startCheckPointDistance = distance / 1000.00;
-
-    // don't wait for GPS to fire.
-    //debugger;
-    lastTime = performance.now();
-    updateDisplayData(); 
-    updateStageAndCheckPoint();
-
-    if (perfectTimeCountdownTimer != null) {
-        clearTimeout(perfectTimeCountdownTimer);
-        perfectTimeCountdownTrigger = null;
-    }
-
-    // kick off the countdown 20 seconds before end of checkpoint time.
-    let countdownKickoffTime = getPerfectCheckPointTime() - 21000;
-
-    perfectTimeCountdownTimer = setTimeout(() => {
-        triggerCountdown();
-    }, countdownKickoffTime);
-
-}
-
-var advanceCheckPointTimer = null;
-
-function advanceCheckPoint() {
-
     if (checkPointNumber < stageData.checkPoints.length) {
         checkPointNumber++;
-        doAdvanceCheckPoint();
 
         // last checkpoint
         if (checkPointNumber == stageData.checkPoints.length - 1) {
@@ -192,12 +156,44 @@ function advanceCheckPoint() {
             return;
         }
 
-        let perfectCheckPointTime = getPerfectCheckPointTime();
-        advanceCheckPointTimer = setTimeout(() => {
-            advanceCheckPoint();
-        }, perfectCheckPointTime);
+        lastTime = performance.now();
+        previousCheckPointTime = performance.now();
 
+        let nextCheckPointDistance = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
+        nextCheckPointPeriod = (nextCheckPointDistance / stageData.avgSpeed) * 3600000;
+        console.log('chkp:' + checkPointNumber + ' nextchkp time: ' + toTimeString(nextCheckPointPeriod) + ' prevchkp time: ' + previousCheckPointTime);
+
+
+        updateDisplayData();
+        updateStageAndCheckPoint();
+
+        if (perfectTimeCountdownTimer != null) {
+            clearTimeout(perfectTimeCountdownTimer);
+            perfectTimeCountdownTrigger = null;
+        }
+
+        // kick off the countdown 20 seconds before end of checkpoint time.
+        let countdownKickoffTime = nextCheckPointPeriod - 21000;
+
+        perfectTimeCountdownTimer = setTimeout(() => {
+            triggerCountdown();
+        }, countdownKickoffTime);
     }
+}
+
+var advanceCheckPointTimer = null;
+
+function advanceCheckPoint() {
+    doAdvanceCheckPoint();
+
+    let perfectCheckPointTime = nextCheckPointPeriod;
+    if (perfectCheckPointTime == null) {
+        return;
+    }
+    advanceCheckPointTimer = setTimeout(() => {
+        advanceCheckPoint();
+    }, perfectCheckPointTime);
+
 }
 
 
@@ -239,7 +235,7 @@ function freezeDisplayFor15() {
 function updateStageAndCheckPoint() {
     document.getElementById('stageNumberTourDiv').innerHTML = stageNumber;
     document.getElementById('stageNumberRunDiv').innerHTML = stageNumber;
-    document.getElementById('checkPointNumberRunDiv').innerHTML = checkPointNumber;
+    document.getElementById('checkPointNumberRunDiv').innerHTML = checkPointNumber + 1;
 }
 
 
@@ -384,8 +380,10 @@ function enterRunMode() {
 
 
 function tourRunning() {
-    freezeDisplay = false;
     firstGPS = true;
+    freezeDisplay = false;
+    startTime = performance.now();
+    lastTime = performance.now();
     distance = 0.00;
     actualSpeed = 0.00;
     avgSpeed = 0.00;

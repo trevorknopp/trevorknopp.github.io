@@ -11,9 +11,6 @@ var lastLon = null;
 var lastTime = null;
 var startTime = null;
 
-//var startCheckPointTime = null;
-//var startCheckPointDistance = null;
-
 var firstGPS = true;
 var freezeDisplay = false;
 
