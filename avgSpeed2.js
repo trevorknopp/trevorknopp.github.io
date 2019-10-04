@@ -149,7 +149,7 @@ function doAdvanceCheckPoint() {
         checkPointNumber++;
 
         // last checkpoint
-        if (checkPointNumber == stageData.checkPoints.length - 1) {
+        if (checkPointNumber == stageData.checkPoints.length) {
             clearTimeout(advanceCheckPointTimer);
             currentMode = 'runModeFinishing';
             showCorrectRunButton();
