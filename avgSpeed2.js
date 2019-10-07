@@ -5,7 +5,6 @@ function gpsError(err) {
 }
 
 
-
 function calcStepDistance(lat1, long1, lat2, long2) {
     var φ1 = Math.PI * lat1 / 180;
     var φ2 = Math.PI * lat2 / 180;
@@ -149,19 +148,23 @@ function doAdvanceCheckPoint() {
         checkPointNumber++;
 
         // last checkpoint
-        if (checkPointNumber == stageData.checkPoints.length) {
-            clearTimeout(advanceCheckPointTimer);
+        if (checkPointNumber == stageData.checkPoints.length-1) {
             currentMode = 'runModeFinishing';
             showCorrectRunButton();
+        }
+
+        if (checkPointNumber == stageData.checkPoints.length) {
+            clearTimeout(advanceCheckPointTimer);
             return;
         }
+
 
         lastTime = performance.now();
         previousCheckPointTime = performance.now();
 
         let nextCheckPointDistance = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
         nextCheckPointPeriod = (nextCheckPointDistance / stageData.avgSpeed) * 3600000;
-        console.log('chkp:' + checkPointNumber + ' nextchkp time: ' + toTimeString(nextCheckPointPeriod) + ' prevchkp time: ' + previousCheckPointTime);
+        console.log('chkpt:' + checkPointNumber + ' nextchkp time: ' + toTimeString(nextCheckPointPeriod) + ' prevchkp time: ' + previousCheckPointTime);
 
 
         updateDisplayData();
@@ -297,14 +300,17 @@ function runFreeze() {
 }
 
 function runUnFreeze() {
-    toggleFreezeDisplay();
 
-    if (checkPointNumber == stageData.checkPoints.length - 1) {
-        enterTourMode();
-    }
+    if (checkPointNumber == stageData.checkPoints.length-1) {
+        currentMode = 'tourModeRunning';
+        showCorrectTourButton();
+        showCorrectPanel();
+        toggleFreezeDisplay();
+}
     else {
         currentMode = 'runModeRunning';
         showCorrectRunButton();
+        toggleFreezeDisplay();
     }
 }
 

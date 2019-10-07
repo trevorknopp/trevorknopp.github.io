@@ -5,6 +5,7 @@ var filesToCache = [
     '/avgSpeed2Data.js',
     '/avgSpeed2Startup.js',
     '/avgSpeed2.js'
+
 ];
 
 

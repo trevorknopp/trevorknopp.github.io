@@ -13,6 +13,7 @@ function readSingleFile(e) {
     reader.readAsText(file);
 }
 
+
 function processFile(contents) {
     try {
         let data = contents.split('\n').map((x) => {
