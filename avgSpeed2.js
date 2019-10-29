@@ -164,7 +164,7 @@ function doAdvanceCheckPoint() {
 
         let nextCheckPointDistance = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
         nextCheckPointPeriod = (nextCheckPointDistance / stageData.avgSpeed) * 3600000;
-        console.log('chkpt:' + checkPointNumber + ' nextchkp time: ' + toTimeString(nextCheckPointPeriod) + ' prevchkp time: ' + previousCheckPointTime);
+        console.log('chkpt:' + checkPointNumber + ' nextchkp time: ' + toTimeString(nextCheckPointPeriod) );
 
 
         updateDisplayData();
@@ -246,6 +246,7 @@ function updateStageAndCheckPoint() {
 
 
 function tourStart() {
+
     currentMode = 'tourModeRunning';
     showCorrectTourButton();
 
@@ -360,6 +361,11 @@ function leaveSetupMode() {
 }
 
 function enterSetupMode() {
+    clearTimeout(freezeTimer);
+    clearTimeout(advanceCheckPointTimer);
+    clearTimeout(perfectTimeCountdownTimer);
+    clearInterval(countdownInterval);
+
     currentMode = 'setupMode';
     showCorrectTourButton();
     showCorrectPanel();
