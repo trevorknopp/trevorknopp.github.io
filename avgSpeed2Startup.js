@@ -25,15 +25,15 @@ var gpsOptions = {
     distanceFilter: 5
 };
 
-var wpId = navigator.geolocation.watchPosition(gpsUpdate, gpsError, gpsOptions);
+//var wpId = navigator.geolocation.watchPosition(gpsUpdate, gpsError, gpsOptions);
 // mock watchPosition
-//setInterval(() => {
-//    let position = {};
-//    position.coords = {};
-//    position.coords.latitude = -45.000;
-//    position.coords.longitude = 178.000;
-//    gpsUpdate(position);
-//}, 200);
+setInterval(() => {
+    let position = {};
+    position.coords = {};
+    position.coords.latitude = -45.000;
+    position.coords.longitude = 178.000;
+    gpsUpdate(position);
+}, 200);
 
 document.getElementById('file-input').addEventListener('change', readSingleFile, false);
 
