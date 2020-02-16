@@ -18,9 +18,11 @@
     <link rel="stylesheet" href="avgSpeed2.css" type="text/css" />
 
     <script type="text/javascript">
+        
         navigator.serviceWorker.register('/sw.js');
 
-        var appVersion = 170;
+        var appVersion = 171;
+        console.log('starting appVersion: ' + appVersion);
 
         fetch('/meta.json')
             .then((response) => response.json())
@@ -30,6 +32,7 @@
                     caches.keys().then(function (names) {
                         for (let name of names) caches.delete(name);
                         // delete browser cache and hard reload
+                        console.log('hard reload');
                         window.location.reload(true);
                     });
                 }

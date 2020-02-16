@@ -13,6 +13,7 @@ var filesToCache = [
 self.addEventListener('install', function (e) {
     e.waitUntil(
         caches.open(cacheName).then(function (cache) {
+            console.log('ínstalled');
             return cache.addAll(filesToCache);
         })
     );
@@ -22,6 +23,7 @@ self.addEventListener('install', function (e) {
 self.addEventListener('fetch', function (e) {
     e.respondWith(
         caches.match(e.request).then(function (response) {
+            console.log('fetched offline');
             return response || fetch(e.request);
         })
     );
@@ -38,6 +40,7 @@ self.addEventListener('activate', function (event) {
                     // the whole origin
                     return true;
                 }).map(function (cacheName) {
+                    console.log('delete cached file: ' + cacheName);
                     return caches.delete(cacheName);
                 })
             );
