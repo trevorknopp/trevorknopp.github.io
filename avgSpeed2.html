@@ -20,7 +20,7 @@
     <script type="text/javascript">
         navigator.serviceWorker.register('/sw.js');
 
-        var appVersion = 168;
+        var appVersion = 169;
 
         fetch('/meta.json')
             .then((response) => response.json())
@@ -69,7 +69,6 @@
 
             <div style="padding-top: 2vh;">
                 <button style="font-size:3vw;" onclick="showStageData()">SHOW STAGE DATA </button>
-                Version: <span id="versionDiv"></span>
             </div>
 
         </div>
@@ -114,13 +113,17 @@
             </div>
         </div>
 
+
+        <div>
+            Version: <span id="versionDiv"></span>
+        </div>
+
         <div class="botty">
             <button id="tourSetupBtn" onclick="enterSetupMode()">SETUP</button>
             <button id="tourStartBtn" onclick="tourStart()">START</button>
             <button id="tourFreezeBtn" onclick="tourFreeze()">FREEZE</button>
             <button id="tourUnFreezeBtn" onclick="tourUnFreeze()">UNFREEZE</button>
         </div>
-
     </div>
 
     <div id="runDiv">
