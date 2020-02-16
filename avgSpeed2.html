@@ -17,24 +17,6 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="avgSpeed2.css" type="text/css" />
 
-    <script type="text/javascript">
-        navigator.serviceWorker.register('/sw.js');
-
-        var appVersion = 169;
-
-        fetch('/meta.json')
-            .then((response) => response.json())
-            .then((meta) => {
-                if (appVersion > meta.version) {
-                    // Service worker cache should be cleared with caches.delete()
-                    caches.keys().then(function (names) {
-                        for (let name of names) caches.delete(name);
-                        // delete browser cache and hard reload
-                        window.location.reload(true);
-                    });
-                }
-            });
-    </script>
 
     <script type="text/javascript" src="/avgSpeed2.js"></script>
 </head>
