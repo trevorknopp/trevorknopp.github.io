@@ -8,22 +8,6 @@ var filesToCache = [
 
 ];
 
-var appVersion = 170;
-
-fetch('/meta.json')
-    .then((response) => response.json())
-    .then((meta) => {
-        if (appVersion > meta.version) {
-            // Service worker cache should be cleared with caches.delete()
-            caches.keys().then(function (names) {
-                for (let name of names) caches.delete(name);
-                // delete browser cache and hard reload
-                window.location.reload(true);
-            });
-        }
-    });
-
-
 
 /* Start the service worker and cache all of the app's content */
 self.addEventListener('install', function (e) {
