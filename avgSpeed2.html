@@ -21,12 +21,13 @@
         
         navigator.serviceWorker.register('/sw.js');
 
-        var appVersion = 171;
+        var appVersion = 172;
         console.log('starting appVersion: ' + appVersion);
 
         fetch('/meta.json')
             .then((response) => response.json())
             .then((meta) => {
+                console.log('this is meta version: ' + meta.version);
                 if (appVersion > meta.version) {
                     // Service worker cache should be cleared with caches.delete()
                     caches.keys().then(function (names) {
