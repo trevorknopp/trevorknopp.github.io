@@ -23,7 +23,7 @@ self.addEventListener('install', function (e) {
 self.addEventListener('fetch', function (e) {
     e.respondWith(
         caches.match(e.request).then(function (response) {
-            console.log(resonse ? 'fetched offline': 'real online fetch');
+            console.log(response ? 'fetched offline': 'real online fetch');
             return response || fetch(e.request);
         })
     );
