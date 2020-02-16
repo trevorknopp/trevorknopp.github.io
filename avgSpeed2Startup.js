@@ -1,3 +1,4 @@
+
 var distance = 0.00;
 var actualSpeed = 0.00;
 var avgSpeed = 0.00;
@@ -14,7 +15,10 @@ var startTime = null;
 var firstGPS = true;
 var freezeDisplay = false;
 
-navigator.serviceWorker.register('/sw.js');
+
+
+var versionDiv = document.getElementById('versionDiv');
+versionDiv.innerHTML = appVersion;
 
 var gpsOptions = {
     enableHighAccuracy: true,
