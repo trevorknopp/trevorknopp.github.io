@@ -24,12 +24,12 @@ function gpsUpdate(position) {
 
     let incTime = performance.now() - lastTime;
     if (incTime > 500.00) {
-        lastTime = performance.now();
 
         let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
         actualSpeed = incDist * 3600.00 / incTime;
 
         if (incDist > 2.0) {
+            lastTime = performance.now();
             distance += incDist;
 
             lastLat = position.coords.latitude;
