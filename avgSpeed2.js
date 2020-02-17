@@ -45,7 +45,7 @@ function gpsUpdate(position) {
 
 function updateDisplayData() {
     if (isTourMode()) {
-        distanceTourDiv.innerHTML = round2dp(distance / 1000.00);
+        distanceTourDiv.innerHTML = round3dp(distance / 1000.00);
         actualSpeedTourDiv.innerHTML = Math.round(actualSpeed);
 
         actualSpeedTourDiv.className = 'value ' + (actualSpeed > 101.00 ? 'blinking' : '');
@@ -438,6 +438,10 @@ function toTimeString(ms) {
     var seconds = parseInt((ms - (hours * 3600000) - (minutes * 60000)) / 1000);
 
     return (negative ? '-' : '') + hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+}
+
+function round3dp(num) {
+    return (+(Math.round(num + "e+3") + "e-3")).toFixed(3);
 }
 
 
