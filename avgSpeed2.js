@@ -34,11 +34,12 @@ function gpsUpdate(position) {
 
             lastLat = position.coords.latitude;
             lastLon = position.coords.longitude;
-        }
 
-        if (!freezeDisplay) {
-            updateDisplayData();
-        }
+            if (!freezeDisplay) {
+                updateDisplayData();
+            }
+       }
+
     }
 }
 
