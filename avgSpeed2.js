@@ -23,22 +23,22 @@ function gpsUpdate(position) {
     }
 
     let incTime = performance.now() - lastTime;
-    if (incTime > 500.00) {
+    if (incTime > 1000.00) {
 
         let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
-        actualSpeed = incDist * 3600.00 / incTime;
 
-        if (incDist > 2.0) {
+        if (incDist > 4.0) {
             lastTime = performance.now();
             distance += incDist;
 
             lastLat = position.coords.latitude;
             lastLon = position.coords.longitude;
+        }
 
-            if (!freezeDisplay) {
-                updateDisplayData();
-            }
-       }
+        actualSpeed = incDist * 3600.00 / incTime;
+        if (!freezeDisplay) {
+            updateDisplayData();
+        }
 
     }
 }
@@ -149,7 +149,7 @@ function doAdvanceCheckPoint() {
         checkPointNumber++;
 
         // last checkpoint
-        if (checkPointNumber == stageData.checkPoints.length-1) {
+        if (checkPointNumber == stageData.checkPoints.length - 1) {
             currentMode = 'runModeFinishing';
             showCorrectRunButton();
         }
@@ -165,7 +165,7 @@ function doAdvanceCheckPoint() {
 
         let nextCheckPointDistance = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
         nextCheckPointPeriod = (nextCheckPointDistance / stageData.avgSpeed) * 3600000;
-        console.log('chkpt:' + checkPointNumber + ' nextchkp time: ' + toTimeString(nextCheckPointPeriod) );
+        console.log('chkpt:' + checkPointNumber + ' nextchkp time: ' + toTimeString(nextCheckPointPeriod));
 
 
         updateDisplayData();
@@ -303,12 +303,12 @@ function runFreeze() {
 
 function runUnFreeze() {
 
-    if (checkPointNumber == stageData.checkPoints.length-1) {
+    if (checkPointNumber == stageData.checkPoints.length - 1) {
         currentMode = 'tourModeRunning';
         showCorrectTourButton();
         showCorrectPanel();
         toggleFreezeDisplay();
-}
+    }
     else {
         currentMode = 'runModeRunning';
         showCorrectRunButton();
