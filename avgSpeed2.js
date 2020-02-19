@@ -18,24 +18,25 @@ function gpsUpdate(position) {
     if (firstGPS) {
         lastLat = position.coords.latitude;
         lastLon = position.coords.longitude;
+        lastTime = performance.now();
         firstGPS = false;
         return;
     }
 
     let incTime = performance.now() - lastTime;
-    if (incTime > 1000.00) {
+    if (incTime > 1000.0) {
+        lastTime = performance.now();
 
         let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
 
-        if (incDist > 4.0) {
-            lastTime = performance.now();
+        if (incDist > 5.0 ) {
             distance += incDist;
 
             lastLat = position.coords.latitude;
             lastLon = position.coords.longitude;
         }
 
-        actualSpeed = incDist * 3600.00 / incTime;
+        actualSpeed = incDist; //incDist * 3600.00 / incTime;
         if (!freezeDisplay) {
             updateDisplayData();
         }
