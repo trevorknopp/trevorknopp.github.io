@@ -48,7 +48,7 @@ function gpsUpdate(position) {
 function updateDisplayData() {
     if (isTourMode()) {
         distanceTourDiv.innerHTML = round3dp(distance / 1000.00);
-        actualSpeedTourDiv.innerHTML = Math.round(actualSpeed);
+        actualSpeedTourDiv.innerHTML = round3dp(actualSpeed);
 
         actualSpeedTourDiv.className = 'value ' + (actualSpeed > 101.00 ? 'blinking' : '');
 
