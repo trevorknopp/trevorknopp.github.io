@@ -23,25 +23,27 @@ function gpsUpdate(position) {
         return;
     }
 
-    let incTime = performance.now() - lastTime;
-    if (incTime > 1000.0) {
-        lastTime = performance.now();
+    //let incTime = performance.now() - lastTime;
+    //if (incTime < 1000.0) {
+    //    return;
+    //}  
+    //lastTime = performance.now();
 
-        let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
+    let incDist = calcStepDistance(lastLat, lastLon, position.coords.latitude, position.coords.longitude); // metres
 
-        if (incDist > 5.0 ) {
-            distance += incDist;
+    if (incDist > 5.0) {
+        distance += incDist;
 
-            lastLat = position.coords.latitude;
-            lastLon = position.coords.longitude;
-        }
-
-        actualSpeed = incDist; //incDist * 3600.00 / incTime;
-        if (!freezeDisplay) {
-            updateDisplayData();
-        }
-
+        lastLat = position.coords.latitude;
+        lastLon = position.coords.longitude;
     }
+
+    actualSpeed = incDist; //incDist * 3600.00 / incTime;
+    if (!freezeDisplay) {
+        updateDisplayData();
+    }
+
+
 }
 
 
