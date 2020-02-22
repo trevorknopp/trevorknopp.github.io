@@ -1,7 +1,7 @@
 {
-    "name": "Average Speed 2",
+    "name": "Average Speed 3",
 
-    "short_name": "AvgSpeed2",
+    "short_name": "AvgSpeed3",
     "icons": [
         {
             "src": "images/AvgSpeed2_48.png",
@@ -20,7 +20,7 @@
         }
     ],
     "lang": "en-US",
-    "start_url": "/avgSpeed2.html",
+    "start_url": "/avgSpeed3.html",
     "display": "standalone",
     "background_color": "white",
     "theme_color": "white"

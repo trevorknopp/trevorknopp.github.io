@@ -1,0 +1,85 @@
+﻿<html>
+<head>
+    <title>Avg Speed 3</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="white" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Average Speed 3">
+
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="images/AvgSpeed2_96.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="avgSpeed2.css" type="text/css" />
+
+    <script type="text/javascript">
+
+        navigator.serviceWorker.register('/sw3.js');
+
+        var appVersion = 300;
+        console.log('starting appVersion: ' + appVersion);
+
+        fetch('/meta.json')
+            .then((response) => response.json())
+            .then((meta) => {
+                console.log('this is meta version: ' + meta.version);
+                if (appVersion > meta.version) {
+                    // Service worker cache should be cleared with caches.delete()
+                    caches.keys().then(function (names) {
+                        for (let name of names) caches.delete(name);
+                        // delete browser cache and hard reload
+                        console.log('hard reload');
+                        window.location.reload(true);
+                    });
+                }
+            });
+    </script>
+
+</head>
+
+<body>
+
+    <div>
+        <h2>Avg Speed 3</h2>
+
+        <div class="container">
+            <div class="prompt">
+                Current Time
+            </div>
+            <div id="clock" class="value"></div>
+
+            <div class="prompt">
+                Distance Travelled
+            </div>
+            <div id="distanceDiv" class="value">
+                0.00
+            </div>
+
+            <div class="prompt">
+                Actual Speed
+            </div>
+            <div id="actualSpeedDiv" class="value">
+                0.00
+            </div>
+
+            <div class="prompt">
+                Average Speed
+            </div>
+            <div id="avgSpeedDiv" class="value">
+                0.00
+            </div>
+
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="/avgSpeed3.js"></script>
+
+</body>
+
+</html>
