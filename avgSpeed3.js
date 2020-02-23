@@ -69,12 +69,17 @@ function gpsUpdate(position) {
         lastLat = position.coords.latitude;
         lastLon = position.coords.longitude;
 
-        distanceDiv.innerHTML = round3dp(distance / 1000.00);
-        actualSpeedDiv.innerHTML = round3dp(actualSpeed);
-
-        avgSpeed = distance * 3600.00 / (performance.now() - startTime);
-        avgSpeedDiv.innerHTML = round1dp(avgSpeed);
+        updateDisplay();
     }
+}
+
+
+function updateDisplay() {
+    distanceDiv.innerHTML = round3dp(distance / 1000.00);
+    actualSpeedDiv.innerHTML = round3dp(actualSpeed);
+
+    avgSpeed = distance * 3600.00 / (performance.now() - startTime);
+    avgSpeedDiv.innerHTML = round1dp(avgSpeed);
 }
 
 
@@ -89,6 +94,8 @@ function reset() {
     startTime = null;
 
     firstGPS = true;
+
+    updateDisplay();
 }
 
 // utility functions
