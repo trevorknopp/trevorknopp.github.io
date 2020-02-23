@@ -21,7 +21,7 @@
 
         navigator.serviceWorker.register('/sw3.js');
 
-        var appVersion = 300;
+        var appVersion = 301;
         console.log('starting appVersion: ' + appVersion);
 
         fetch('/meta.json')
@@ -48,10 +48,12 @@
         <h2>Avg Speed 3</h2>
 
         <div class="container">
-            <div class="prompt">
-                Current Time
-            </div>
-            <div id="clock" class="value"></div>
+            <!--
+                <div class="prompt">
+                    Current Time
+                </div>
+                <div id="clock" class="value"></div>
+            -->
 
             <div class="prompt">
                 Distance Travelled
@@ -74,6 +76,10 @@
                 0.00
             </div>
 
+
+            <div>
+                <button onclick="reset()"></button>
+            </div>
         </div>
 
     </div>

@@ -13,11 +13,8 @@ var firstGPS = true;
 var gpsOptions = {
     enableHighAccuracy: true,
     maximumAge: 0,
-    timeout: 1000,
-    maxWait: 1000,
-    desiredAccuracy: 5,
-    distanceFilter: 5
-};
+    maxWait: 5000
+ };
 
 var wpId = navigator.geolocation.watchPosition(gpsUpdate, gpsError, gpsOptions);
 // mock watchPosition
@@ -34,10 +31,7 @@ var distanceDiv = document.getElementById('distanceDiv');
 var actualSpeedDiv = document.getElementById('actualSpeedDiv');
 var avgSpeedDiv = document.getElementById('avgSpeedDiv');
 
-setInterval(updateClock, 1000);
-
-
-
+//setInterval(updateClock, 1000);
 
 // main engine starts here...
 
@@ -84,6 +78,18 @@ function gpsUpdate(position) {
 }
 
 
+function reset() {
+    distance = 0.00;
+    actualSpeed = 0.00;
+    avgSpeed = 0.00;
+
+    lastLat = null;
+    lastLon = null;
+    lastTime = null;
+    startTime = null;
+
+    firstGPS = true;
+}
 
 // utility functions
 
@@ -112,7 +118,7 @@ function round1dp(num) {
     return (+(Math.round(num + "e+1") + "e-1")).toFixed(1);
 }
 
-function updateClock() {
-    document.getElementById('clock').innerHTML = new Date().toLocaleTimeString();
-}
+//function updateClock() {
+//    document.getElementById('clock').innerHTML = new Date().toLocaleTimeString();
+//}
 
