@@ -139,7 +139,6 @@ function enterSetupMode() {
 
 function enterRunMode() {
     currentMode = 'runModeRunning';
-    showCorrectRunButton();
     showCorrectPanel();
 
     checkPointNumber = 0;

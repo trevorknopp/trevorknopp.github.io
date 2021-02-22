@@ -17,16 +17,12 @@ document.getElementById('file-input').addEventListener('change', readSingleFile,
 
 var remainingStageTimeDiv = document.getElementById("remainingStageTimeDiv");
 var remainingCheckPointTimeDiv = document.getElementById('remainingCheckPointTimeDiv');
-var countdownDiv = document.getElementById('countdownDiv');
 var remainingCheckPointSecondsDiv = document.getElementById('remainingCheckPointSecondsDiv');
 
-var runFreezeBtn = document.getElementById("runFreezeBtn");
-var runUnFreezeBtn = document.getElementById("runUnFreezeBtn");
-var runFinishBtn = document.getElementById("runFinishBtn");
 
 updateStageList();
 
 setInterval(updateClock, 1000);
 
 //must be wrong!
-enterTourMode();
+enterRunMode();
