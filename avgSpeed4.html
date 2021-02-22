@@ -1,0 +1,132 @@
+﻿<html>
+<head>
+    <title>Avg Speed 4</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="white" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Average Speed 2">
+    
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="images/AvgSpeed2_96.png">
+    <link rel="manifest" href="/manifest4.json">
+    <link rel="stylesheet" href="avgSpeed4.css" type="text/css" />
+
+    <script type="text/javascript">
+        
+        navigator.serviceWorker.register('/sw4.js');
+
+        var appVersion = 400;
+        console.log('starting appVersion: ' + appVersion);
+
+        fetch('/meta4.json')
+            .then((response) => response.json())
+            .then((meta) => {
+                console.log('this is meta version: ' + meta.version);
+                if (appVersion > meta.version) {
+                    // Service worker cache should be cleared with caches.delete()
+                    caches.keys().then(function (names) {
+                        for (let name of names) caches.delete(name);
+                        // delete browser cache and hard reload
+                        console.log('hard reload');
+                        window.location.reload(true);
+                    });
+                }
+            });
+    </script>
+
+    <script type="text/javascript" src="/avgSpeed4.js"></script>
+</head>
+
+<body>
+
+    <div id="setupDiv">
+        <h2>SETUP</h2>
+
+        <div class="container">
+            <div>
+                <div class="prompt">
+                    Load a Stage File
+                </div>
+                <input type="file" id="file-input">
+                <br />
+                &nbsp;- OR - &nbsp;
+                <br />
+                <div class="prompt">
+                    Select a Stage
+                </div>
+                <select id="stage-number"></select>
+            </div>
+
+           
+
+            <div style="padding-top: 2vh;">
+                <button style="font-size:3vw;" onclick="showStageData()">SHOW STAGE DATA </button>
+                Version: <span id="versionDiv"></span>
+            </div>
+
+        </div>
+
+        <div class="botty">
+            <button onclick="leaveSetupMode()">NEXT</button>
+        </div>
+    </div>
+
+
+
+    <div id="runDiv">
+        <h2 onclick="toggleFreezeDisplay()" style="cursor:pointer">
+            RUN STG:<span id="stageNumberRunDiv">0</span> 
+            INS:<span id="checkPointNumberRunDiv">0</span>
+        </h2>
+
+        <div class="container">
+            
+            <div id="countdownDiv">
+                <div class="prompt">
+                    Count Down
+                </div>
+                <div id="remainingCheckPointSecondsDiv" class="value" style="font-size: 24vw;background-color:#fff;">
+                    --
+                </div>
+            </div>
+
+            <div>
+                <div class="halfWit prompt">
+                    Next Time
+                </div>
+                <div class="halfWit prompt">
+                    End Time
+                </div>
+            </div>
+            <div>
+                <div id="remainingCheckPointTimeDiv" class="halfwit value smaller">
+                    --:--:--
+                </div>
+                <div id="remainingStageTimeDiv" class="halfwit value smaller">
+                    --:--:--
+                </div>
+            </div>
+           
+
+        </div>
+
+        <div id="bottyDiv" class="botty">
+            <button id="runSetupBtn" onclick="enterSetupMode()">SETUP</button>
+            <button id="runFreezeBtn" onclick="runFreeze()">FREEZE</button>
+            <button id="runUnFreezeBtn" onclick="runUnFreeze()">UNFREEZE</button>
+            <button id="runFinishBtn" onclick="runFinish()">FINISH</button>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/avgSpeed4Data.js"></script>
+    <script type="text/javascript" src="/avgSpeed4Startup.js"></script>
+
+</body>
+
+</html>
