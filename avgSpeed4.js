@@ -1,29 +1,23 @@
 ﻿// main engine starts here...
 
 
-function updateDisplayData() {
-    //When the checkpoint advances, the “next distance” should be the 
-    // new checkpoint distance from the start minus the Distance Travelled.
+var nextCheckPointPeriod = 0;
+var nextStagePeriod = 0;
 
-    let perfectStageTime = (stageData.distance / stageData.avgSpeed) * 3600000;
-    let elapsedStageTime = performance.now() - startTime;
-    let remainingStageTime = perfectStageTime - elapsedStageTime;
-    remainingStageTimeDiv.innerHTML = toTimeString(remainingStageTime);
+var checkPointTimer = null;
+var checkPointElapsedTime = 0;
+var stageElapsedTime = 0;
 
-    let elapsedCheckPointTime = performance.now() - previousCheckPointTime;
-    let remainingCheckPointTime = nextCheckPointPeriod - elapsedCheckPointTime;
-    remainingCheckPointTimeDiv.innerHTML = toTimeString(remainingCheckPointTime);
 
+function updateCheckPointSeconds() {
+    checkPointElapsedTime += 1000;
+    remainingCheckPointSecondsDiv.innerHTML = toTimeString(nextCheckPointPeriod - checkPointElapsedTime);
 }
 
-
-var countdownInterval = null;
-
-
-
-var perfectTimeCountdownTimer = null;
-var nextCheckPointPeriod = 0;
-var previousCheckPointTime = 0;
+function updateStageSeconds() {
+    stageElapsedTime += 1000;
+    remainingStageSecondsDiv.innerHTML = toTimeString(nextStagePeriod - stageElapsedTime);
+}
 
 
 function doAdvanceCheckPoint() {
@@ -41,29 +35,27 @@ function doAdvanceCheckPoint() {
             return;
         }
 
-
-        lastTime = performance.now();
-        previousCheckPointTime = performance.now();
+       
 
         let nextCheckPointDistance = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
         nextCheckPointPeriod = (nextCheckPointDistance / stageData.avgSpeed) * 3600000;
-        console.log('chkpt:' + checkPointNumber + ' nextchkp time: ' + toTimeString(nextCheckPointPeriod));
 
+        let nextStageDistance = stageData.checkPoints[stageData.checkPoints.length - 1];
+        nextStagePeriod = (nextStageDistance / stageData.avgSpeed) * 3600000;
 
-        updateDisplayData();
         updateStageAndCheckPoint();
 
-        if (perfectTimeCountdownTimer != null) {
-            clearTimeout(perfectTimeCountdownTimer);
-            perfectTimeCountdownTrigger = null;
+        if (checkPointTimer != null) {
+            clearTimeout(checkPointTimer);
         }
 
-        // kick off the countdown 20 seconds before end of checkpoint time.
-        let countdownKickoffTime = nextCheckPointPeriod - 21000;
+        checkPointElapsedTime = 0;
 
-        perfectTimeCountdownTimer = setTimeout(() => {
-            triggerCountdown();
-        }, countdownKickoffTime);
+        checkPointTimer = setInterval(() => {
+            updateCheckPointSeconds();
+            updateStageSeconds();
+        }, 1000);
+
     }
 }
 
@@ -83,26 +75,11 @@ function advanceCheckPoint() {
 }
 
 
-var unfrozenBackgroundColor = null;
-
-function toggleFreezeDisplay() {
-    freezeDisplay = !freezeDisplay;
-    if (freezeDisplay) {
-        unfrozenBackgroundColor = document.body.style.backgroundColor;
-        document.body.style.backgroundColor = '#000';
-    }
-    else {
-        document.body.style.backgroundColor = unfrozenBackgroundColor;
-    }
-}
-
-
 
 function updateStageAndCheckPoint() {
     document.getElementById('stageNumberRunDiv').innerHTML = stageNumber;
     document.getElementById('checkPointNumberRunDiv').innerHTML = checkPointNumber + 1;
 }
-
 
 // setting and displaying the right mode related data.
 
@@ -117,21 +94,17 @@ function runFinish() {
 
 
 
-
 function leaveSetupMode() {
     if (!loadStageData()) {
         alert("Error: Stage Data not loaded");
         return;
     }
 
-
+    stageElapsedTime = 0;
     enterRunMode();
 }
 
 function enterSetupMode() {
-    clearTimeout(advanceCheckPointTimer);
-    clearTimeout(perfectTimeCountdownTimer);
-
     currentMode = 'setupMode';
     showCorrectPanel();
 }
@@ -140,6 +113,8 @@ function enterSetupMode() {
 function enterRunMode() {
     currentMode = 'runModeRunning';
     showCorrectPanel();
+
+    clearTimeout(advanceCheckPointTimer);
 
     checkPointNumber = 0;
     advanceCheckPoint();
