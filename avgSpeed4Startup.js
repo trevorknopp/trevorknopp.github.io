@@ -15,6 +15,7 @@ document.getElementById('file-input').addEventListener('change', readSingleFile,
 var remainingCheckPointSecondsDiv = document.getElementById('remainingCheckPointSecondsDiv');
 var remainingStageSecondsDiv = document.getElementById('remainingStageSecondsDiv');
 
+var crossCheckStageCountdownDiv = document.getElementById('crossCheckStageCountdownDiv');
 
 updateStageList();
 enterSetupMode();

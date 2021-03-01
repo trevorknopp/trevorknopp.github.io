@@ -3,6 +3,7 @@
 
 var nextCheckPointPeriod = 0;
 var nextStagePeriod = 0;
+var startTime = 0;
 
 var checkPointTimer = null;
 var checkPointElapsedTime = 0;
@@ -17,6 +18,8 @@ function updateCheckPointSeconds() {
 function updateStageSeconds() {
     stageElapsedTime += 1000;
     remainingStageSecondsDiv.innerHTML = toTimeString(nextStagePeriod - stageElapsedTime);
+
+    crossCheckStageCountdownDiv.innerHTML = toTimeString(nextStagePeriod - (performance.now() - startTime));
 }
 
 
@@ -101,6 +104,7 @@ function leaveSetupMode() {
     }
 
     stageElapsedTime = 0;
+    startTime = performance.now();
     enterRunMode();
 }
 
