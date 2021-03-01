@@ -1,169 +1,98 @@
-﻿// main engine starts here...
+// data loading and selecting
 
-
-var nextCheckPointPeriod = 0;
-var nextStagePeriod = 0;
-var startTime = 0;
-
-var checkPointTimer = null;
-var checkPointElapsedTime = 0;
-var stageElapsedTime = 0;
-
-
-function updateCheckPointSeconds() {
-    checkPointElapsedTime += 1000;
-    remainingCheckPointSecondsDiv.innerHTML = toTimeString(nextCheckPointPeriod - checkPointElapsedTime);
-}
-
-function updateStageSeconds() {
-    stageElapsedTime += 1000;
-    remainingStageSecondsDiv.innerHTML = toTimeString(nextStagePeriod - stageElapsedTime);
-
-    crossCheckStageCountdownDiv.innerHTML = toTimeString(nextStagePeriod - (performance.now() - startTime));
-}
-
-
-function doAdvanceCheckPoint() {
-    if (checkPointNumber < stageData.checkPoints.length) {
-        checkPointNumber++;
-
-        // last checkpoint
-        if (checkPointNumber == stageData.checkPoints.length - 1) {
-            currentMode = 'runModeFinishing';
-            showCorrectRunButton();
-        }
-
-        if (checkPointNumber == stageData.checkPoints.length) {
-            clearTimeout(advanceCheckPointTimer);
-            return;
-        }
-
-       
-
-        let nextCheckPointDistance = stageData.checkPoints[checkPointNumber] - stageData.checkPoints[checkPointNumber - 1];
-        nextCheckPointPeriod = (nextCheckPointDistance / stageData.avgSpeed) * 3600000;
-
-        let nextStageDistance = stageData.checkPoints[stageData.checkPoints.length - 1];
-        nextStagePeriod = (nextStageDistance / stageData.avgSpeed) * 3600000;
-
-        updateStageAndCheckPoint();
-
-        if (checkPointTimer != null) {
-            clearTimeout(checkPointTimer);
-        }
-
-        checkPointElapsedTime = 0;
-
-        checkPointTimer = setInterval(() => {
-            updateCheckPointSeconds();
-            updateStageSeconds();
-        }, 1000);
-
-    }
-}
-
-var advanceCheckPointTimer = null;
-
-function advanceCheckPoint() {
-    doAdvanceCheckPoint();
-
-    let perfectCheckPointTime = nextCheckPointPeriod;
-    if (perfectCheckPointTime == null) {
+function readSingleFile(e) {
+    var file = e.target.files[0]; 
+    if (!file) {
         return;
     }
-    advanceCheckPointTimer = setTimeout(() => {
-        advanceCheckPoint();
-    }, perfectCheckPointTime);
-
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        var contents = e.target.result;
+        processFile(contents);
+    };
+    reader.readAsText(file);
 }
 
 
+function processFile(contents) {
+    try {
+        let data = contents.split('\n').map((x) => {
+            var pairs = x.split(',');
+            return {
+                name: pairs[0],
+                value: pairs[1] ? pairs[1].split('\r')[0] : ''
+            };
+        });
 
-function updateStageAndCheckPoint() {
-    document.getElementById('stageNumberRunDiv').innerHTML = stageNumber;
-    document.getElementById('checkPointNumberRunDiv').innerHTML = checkPointNumber + 1;
-}
+        stageData = {
+            avgSpeed: data[1].value,
+            distance: data[2].value,
+            total: data[3].value,
+            checkPoints: getCheckPoints(data)
+        };
 
-// setting and displaying the right mode related data.
+        localStorage.removeItem(data[0].value);
+        localStorage.setItem(data[0].value, JSON.stringify(stageData));
 
-
-
-function runFinish() {
-    clearTimeout(advanceCheckPointTimer);
-    clearTimeout(perfectTimeCountdownTimer);
-
-    toggleFreezeDisplay();
-}
-
-
-
-function leaveSetupMode() {
-    if (!loadStageData()) {
-        alert("Error: Stage Data not loaded");
-        return;
+        updateStageList();
+        loadStageData();
     }
-
-    stageElapsedTime = 0;
-    startTime = performance.now();
-    enterRunMode();
-}
-
-function enterSetupMode() {
-    currentMode = 'setupMode';
-    showCorrectPanel();
-}
-
-
-function enterRunMode() {
-    currentMode = 'runModeRunning';
-    showCorrectPanel();
-
-    clearTimeout(advanceCheckPointTimer);
-
-    checkPointNumber = 0;
-    advanceCheckPoint();
-}
-
-
-function showCorrectPanel() {
-    if (currentMode === 'setupMode') {
-        document.getElementById('setupDiv').style.display = 'block';
-        document.getElementById('runDiv').style.display = 'none';
-    }
-    if (currentMode === 'runModeRunning') {
-        document.getElementById('setupDiv').style.display = 'none';
-        document.getElementById('runDiv').style.display = 'block';
+    catch (error) {
+        alert('Failed to load the csv file');
     }
 }
 
-
-// utility functions
-
-function toTimeString(ms) {
-    let negative = ms < 0;
-    if (negative) {
-        ms = -ms;
+function getCheckPoints(data) {
+    let i = 5;
+    let steps = [];
+    while (i < 25 && data[i] && data[i].value.length != 0) {
+        steps.push(data[i++].value);
     }
-    var hours = Math.floor(ms / 3600000);
-    var minutes = Math.floor((ms - (hours * 3600000)) / 60000);
-    var seconds = parseInt((ms - (hours * 3600000) - (minutes * 60000)) / 1000);
-
-    return (negative ? '-' : '') + hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+    return steps;
 }
 
-function round3dp(num) {
-    return (+(Math.round(num + "e+3") + "e-3")).toFixed(3);
+function loadStageData() {
+    let tempStageNumber = document.getElementById('stage-number').value;
+    let rawData = localStorage.getItem(tempStageNumber);
+    if (rawData == null) {
+        return false;
+    }
+
+    stageNumber = tempStageNumber;
+
+    stageData = JSON.parse(rawData);
+
+    stageData.distance = Number.parseFloat(stageData.distance);
+    stageData.total = Number.parseFloat(stageData.total);
+    stageData.avgSpeed = Number.parseFloat(stageData.avgSpeed);
+    for (let i = 0; i < stageData.checkPoints.length; i++) {
+        stageData.checkPoints[i] = Number.parseFloat(stageData.checkPoints[i]);
+    }
+
+    return true;
 }
 
 
-function round2dp(num) {
-    return (+(Math.round(num + "e+2") + "e-2")).toFixed(2);
+function updateStageList() {
+    var s = document.getElementById('stage-number');
+
+    Object.keys(localStorage).forEach((element, key) => {
+        s[key] = new Option(element, element);
+    });
 }
 
-function round1dp(num) {
-    return (+(Math.round(num + "e+1") + "e-1")).toFixed(1);
+
+function showStageData() {
+    loadStageData();
+    let str = 'stage number: ' + stageNumber + '\n'
+        + 'distance: ' + stageData.distance + '\n'
+        + 'total: ' + stageData.total + '\n'
+        + 'avgSpeed: ' + stageData.avgSpeed + '\n';
+
+    for (let i = 0; i < stageData.checkPoints.length; i++) {
+        str += stageData.checkPoints[i] + '\n';
+    }
+
+    alert(str);
 }
 
-function updateClock() {
-    document.getElementById('clock').innerHTML = new Date().toLocaleTimeString();
-}
