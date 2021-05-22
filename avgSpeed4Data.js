@@ -1,6 +1,6 @@
 // data loading and selecting
 
-function readSingleFile(e) {
+function uploadStageFile(e, callback) {
     var file = e.target.files[0]; 
     if (!file) {
         return;
@@ -8,13 +8,14 @@ function readSingleFile(e) {
     var reader = new FileReader();
     reader.onload = function (e) {
         var contents = e.target.result;
-        processFile(contents);
+        addFileContentsToLocalStorage(contents);
+        callback();
     };
     reader.readAsText(file);
 }
 
 
-function processFile(contents) {
+function addFileContentsToLocalStorage(contents) {
     try {
         let data = contents.split('\n').map((x) => {
             var pairs = x.split(',');
@@ -24,7 +25,7 @@ function processFile(contents) {
             };
         });
 
-        stageData = {
+        let stageData = {
             avgSpeed: data[1].value,
             distance: data[2].value,
             total: data[3].value,
@@ -34,8 +35,6 @@ function processFile(contents) {
         localStorage.removeItem(data[0].value);
         localStorage.setItem(data[0].value, JSON.stringify(stageData));
 
-        updateStageList();
-        loadStageData();
     }
     catch (error) {
         alert('Failed to load the csv file');
@@ -51,16 +50,14 @@ function getCheckPoints(data) {
     return steps;
 }
 
-function loadStageData() {
-    let tempStageNumber = document.getElementById('stage-number').value;
-    let rawData = localStorage.getItem(tempStageNumber);
+
+function getStageDataFromLocalStorage(stageNumber) {
+    let rawData = localStorage.getItem(stageNumber);
     if (rawData == null) {
-        return false;
+        return null;
     }
-
-    stageNumber = tempStageNumber;
-
-    stageData = JSON.parse(rawData);
+  
+    let stageData = JSON.parse(rawData);
 
     stageData.distance = Number.parseFloat(stageData.distance);
     stageData.total = Number.parseFloat(stageData.total);
@@ -69,21 +66,17 @@ function loadStageData() {
         stageData.checkPoints[i] = Number.parseFloat(stageData.checkPoints[i]);
     }
 
-    return true;
+    return stageData;
 }
 
 
-function updateStageList() {
-    var s = document.getElementById('stage-number');
-
-    Object.keys(localStorage).forEach((element, key) => {
-        s[key] = new Option(element, element);
-    });
-}
 
 
-function showStageData() {
-    loadStageData();
+function showStageDataInAlertBox() {
+
+    let stageNumber = document.getElementById('stage-number').value;
+
+    let stageData = getStageDataFromLocalStorage(stageNumber);
     let str = 'stage number: ' + stageNumber + '\n'
         + 'distance: ' + stageData.distance + '\n'
         + 'total: ' + stageData.total + '\n'
@@ -96,3 +89,12 @@ function showStageData() {
     alert(str);
 }
 
+function getAllDataFromLocalStorage() {
+    let d = [];
+    Object.keys(localStorage).forEach((element, key) => {
+        d[key] = element;
+    });
+    return d;
+}
+
+export { uploadStageFile, getAllDataFromLocalStorage, getStageDataFromLocalStorage, showStageDataInAlertBox };

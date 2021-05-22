@@ -1,5 +1,7 @@
 // main engine starts here...
 
+import * as DataAccess from './avgSpeed4Data.js';
+
 var nextCheckPointPeriod = 0;
 var nextStagePeriod = 0;
 
@@ -7,9 +9,38 @@ var checkPointTimer = null;
 var checkPointElapsedTime = 0;
 var stageElapsedTime = 0;
 
+var currentMode = '';
+
+let versionDiv = document.getElementById('versionDiv');
+versionDiv.innerHTML = appVersion;
+
+
+document.getElementById('file-input').addEventListener('change', e => DataAccess.uploadStageFile(e, updateStageListDropDown), false);
+document.getElementById('stage-number').addEventListener('change', updateStageNumber, false);
+
+let remainingCheckPointSecondsDiv = document.getElementById('remainingCheckPointSecondsDiv');
+let remainingStageSecondsDiv = document.getElementById('remainingStageSecondsDiv');
+
+
+let stageNumber = '0';
+let checkPointNumber = 1;
+
+let freezeDisplay = false;
+let stageData = null;
+
+
+enterSetupMode();
+updateStageListDropDown();
+
+
+function updateStageNumber() {
+    stageNumber = document.getElementById('stage-number').value;
+    stageData = DataAccess.getStageDataFromLocalStorage(stageNumber);
+}
+
 
 function setStageVars() {
-    let nextCheckPointDistance = stageData.checkPoints[checkPointNumber+1] - stageData.checkPoints[checkPointNumber];
+    let nextCheckPointDistance = stageData.checkPoints[checkPointNumber + 1] - stageData.checkPoints[checkPointNumber];
     nextCheckPointPeriod = (nextCheckPointDistance / stageData.avgSpeed) * 3600000;
 
     let nextStageDistance = stageData.checkPoints[stageData.checkPoints.length - 1];
@@ -17,11 +48,14 @@ function setStageVars() {
 
     document.getElementById('stageNumberRunDiv').innerHTML = stageNumber;
     document.getElementById('checkPointNumberRunDiv').innerHTML = checkPointNumber + 1;
+    document.getElementById('avgSpeedDiv').innerHTML =  round2dp(stageData.avgSpeed);
 }
 
 
 function updateDisplay() {
     remainingCheckPointSecondsDiv.innerHTML = toTimeString(nextCheckPointPeriod - checkPointElapsedTime);
+    remainingCheckPointSecondsDiv.style.backgroundColor = nextCheckPointPeriod - checkPointElapsedTime <= 10000 ? 'red' : 'black';
+
     remainingStageSecondsDiv.innerHTML = toTimeString(nextStagePeriod - stageElapsedTime);
 }
 
@@ -86,7 +120,10 @@ function toggleFreezeDisplay() {
 
 
 function leaveSetupMode() {
-    if (!loadStageData()) {
+
+    updateStageNumber();
+
+    if (stageData == null) {
         alert("Error: Stage Data not loaded");
         return;
     }
@@ -126,6 +163,17 @@ function showCorrectPanel() {
 }
 
 
+function updateStageListDropDown() {
+    var s = document.getElementById('stage-number');
+
+    // make a drop down option for each stage
+    let d = DataAccess.getAllDataFromLocalStorage();
+    d.forEach((element, key) => {
+        s[key] = new Option(element, element);
+    });
+}
+
+
 // utility functions
 
 function toTimeString(ms) {
@@ -156,3 +204,9 @@ function round1dp(num) {
 function updateClock() {
     document.getElementById('clock').innerHTML = new Date().toLocaleTimeString();
 }
+
+function showStageDataInAlertBox() {
+    DataAccess.showStageDataInAlertBox();
+}
+
+export { toggleFreezeDisplay, leaveSetupMode, enterSetupMode, showStageDataInAlertBox };
