@@ -53,10 +53,17 @@ function setStageVars() {
 
 
 function updateDisplay() {
-    remainingCheckPointSecondsDiv.innerHTML = toTimeString(nextCheckPointPeriod - checkPointElapsedTime);
-    remainingCheckPointSecondsDiv.style.backgroundColor = nextCheckPointPeriod - checkPointElapsedTime <= 10000 ? 'red' : 'black';
+    let timeDiff = nextCheckPointPeriod - checkPointElapsedTime;
+    remainingCheckPointSecondsDiv.innerHTML = toTimeString(timeDiff);
+
+    remainingCheckPointSecondsDiv.style.backgroundColor = timeDiff >= 10000
+        ? 'black'
+        : timeDiff > 0
+            ? 'red'
+            : 'green';
 
     remainingStageSecondsDiv.innerHTML = toTimeString(nextStagePeriod - stageElapsedTime);
+
 }
 
 
@@ -86,14 +93,14 @@ function startStage() {
         checkPointElapsedTime += 1000;
         stageElapsedTime += 1000;
 
-        if (checkPointElapsedTime < nextCheckPointPeriod) {
-            if (!freezeDisplay) {
-                updateDisplay();
-            }
-        }
-        else {
+        if (checkPointElapsedTime >= nextCheckPointPeriod + 5000) {
             doAdvanceCheckPoint();
         }
+
+        if (!freezeDisplay) {
+            updateDisplay();
+        }
+
 
     }, 1000);
 
@@ -177,14 +184,17 @@ function updateStageListDropDown() {
 // utility functions
 
 function toTimeString(ms) {
+
     let negative = ms < 0;
     if (negative) {
         ms = -ms;
     }
+
     var hours = Math.floor(ms / 3600000);
     var minutes = Math.floor((ms - (hours * 3600000)) / 60000);
-    var seconds = parseInt((ms - (hours * 3600000) - (minutes * 60000)) / 1000);
+    var seconds = Math.round((ms - (hours * 3600000) - (minutes * 60000)) / 1000);
 
+    
     return (negative ? '-' : '') + hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
 }
 
